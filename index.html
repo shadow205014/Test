@@ -21,13 +21,20 @@
             z-index: -2;
         }
         
-        .stars {
+        .stars-container {
             position: fixed;
             width: 100%;
             height: 100%;
             z-index: -1;
-            background-image: radial-gradient(white 1px, transparent 1px);
-            background-size: 50px 50px;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: white;
+            border-radius: 50%;
         }
         
         .planet {
@@ -47,8 +54,16 @@
             animation: float 15s infinite ease-in-out;
         }
         
-        .saturn {
+        .saturn-system {
             position: absolute;
+            right: 15%;
+            top: 60%;
+            animation: float 20s infinite ease-in-out reverse;
+            z-index: 1;
+        }
+        
+        .saturn {
+            position: relative;
             width: 10vw;
             height: 10vw;
             max-width: 100px;
@@ -58,28 +73,21 @@
             border-radius: 50%;
             background: linear-gradient(45deg, #ffcc33, #ff9933);
             box-shadow: 0 0 20px #ff9933;
-            right: 15%;
-            top: 60%;
             opacity: 0.9;
-            z-index: 1;
-            animation: float 20s infinite ease-in-out reverse;
+            z-index: 2;
+            margin: 0 auto;
         }
         
         .saturn-ring {
             position: absolute;
-            width: calc(10vw * 1.6);
-            height: calc(10vw * 0.3);
-            max-width: 160px;
-            max-height: 30px;
-            min-width: 64px;
-            min-height: 12px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(-20deg);
+            width: 160%;
+            height: 30%;
             border-radius: 50%;
             border: min(0.5vw, 5px) solid rgba(255, 204, 51, 0.4);
-            right: calc(15% - 4.3vw);
-            top: calc(60% + 3.5vw);
-            transform: rotate(-20deg);
-            z-index: 0;
-            animation: float 20s infinite ease-in-out reverse;
+            z-index: 1;
         }
         
         .comet {
@@ -92,6 +100,7 @@
             animation: comet 8s linear infinite;
             top: 25%;
             left: -50px;
+            z-index: 3;
         }
         
         .content {
@@ -101,7 +110,7 @@
             transform: translate(-50%, -50%);
             text-align: center;
             color: white;
-            z-index: 2;
+            z-index: 4;
             width: 90%;
             max-width: 600px;
         }
@@ -143,41 +152,102 @@
                 text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.5), 0 0 40px rgba(102, 204, 255, 0.7);
             }
         }
-        
-        /* Media queries para ajustes específicos */
-        @media (max-width: 768px) {
-            .saturn-ring {
-                right: calc(15% - 3.2vw);
-                top: calc(60% + 4vw);
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .saturn-ring {
-                right: calc(15% - 3vw);
-                top: calc(60% + 4.2vw);
-            }
-            
-            .planet {
-                top: 20%;
-            }
-            
-            .saturn {
-                top: 70%;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="space-background"></div>
-    <div class="stars"></div>
+    <div class="stars-container" id="starsContainer"></div>
     <div class="planet"></div>
-    <div class="saturn"></div>
-    <div class="saturn-ring"></div>
+    
+    <div class="saturn-system">
+        <div class="saturn-ring"></div>
+        <div class="saturn"></div>
+    </div>
+    
     <div class="comet"></div>
     
     <div class="content">
         <h1>PRÓXIMAMENTE</h1>
     </div>
+
+    <script>
+        // Función para generar un número aleatorio dentro de un rango
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+        
+        // Función para crear estrellas aleatorias con distancia mínima
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            const containerWidth = window.innerWidth;
+            const containerHeight = window.innerHeight;
+            
+            // Configuración de estrellas
+            const starCount = Math.floor(containerWidth * containerHeight / 2000); // Cantidad proporcional al tamaño
+            const minDistance = 30; // Distancia mínima entre estrellas
+            
+            const stars = [];
+            
+            // Intentamos crear estrellas con distancia mínima entre ellas
+            for (let i = 0; i < starCount; i++) {
+                let attempts = 0;
+                let valid = false;
+                let x, y;
+                
+                // Intentamos encontrar una posición válida
+                while (!valid && attempts < 10) {
+                    attempts++;
+                    x = randomInRange(0, containerWidth);
+                    y = randomInRange(0, containerHeight);
+                    
+                    valid = true;
+                    // Verificamos la distancia con otras estrellas
+                    for (const star of stars) {
+                        const dx = star.x - x;
+                        const dy = star.y - y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < minDistance) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                }
+                
+                // Si encontramos una posición válida, creamos la estrella
+                if (valid) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = `${x}px`;
+                    star.style.top = `${y}px`;
+                    
+                    // Variamos el tamaño y brillo para dar más realismo
+                    const size = randomInRange(1, 3);
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.opacity = randomInRange(0.3, 1);
+                    
+                    // Guardamos la posición para la verificación de distancia
+                    stars.push({ x, y });
+                    container.appendChild(star);
+                    
+                    // Añadimos un destello aleatorio
+                    if (Math.random() > 0.7) {
+                        star.style.animation = `twinkle ${randomInRange(1, 5)}s infinite alternate`;
+                    }
+                }
+            }
+        }
+        
+        // Creamos las estrellas al cargar la página
+        window.addEventListener('load', createStars);
+        
+        // Recreamos las estrellas al cambiar el tamaño de la ventana
+        window.addEventListener('resize', function() {
+            const container = document.getElementById('starsContainer');
+            container.innerHTML = ''; // Limpiamos las estrellas existentes
+            createStars(); // Creamos nuevas estrellas
+        });
+    </script>
 </body>
 </html>

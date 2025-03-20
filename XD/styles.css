@@ -1,0 +1,286 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f3f3f3;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+a {
+    text-decoration: none;
+    color: #0066c0;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #e47911;
+}
+
+/* Header styles */
+header {
+    background-color: #131921;
+    color: white;
+    padding: 10px 0;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.logo h1 {
+    color: #ff9900;
+    font-size: 24px;
+}
+
+.logo a {
+    color: #ff9900;
+    text-decoration: none;
+}
+
+.nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.search-bar {
+    flex-grow: 1;
+    margin: 0 15px;
+    position: relative;
+    display: flex;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px 0 0 4px;
+    border: none;
+}
+
+.search-bar button {
+    background-color: #ff9900;
+    border: none;
+    padding: 0 15px;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+    font-size: 14px;
+}
+
+.nav-links a:hover {
+    color: #ff9900;
+    text-decoration: none;
+}
+
+/* Dropdown menu */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    z-index: 1;
+    right: 0;
+    border-radius: 3px;
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 14px;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #ff9900;
+    color: #111;
+    text-align: center;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: #e47911;
+    text-decoration: none;
+    color: #111;
+}
+
+.btn-primary {
+    background-color: #ff9900;
+}
+
+.btn-secondary {
+    background-color: #f0f0f0;
+    color: #111;
+}
+
+.btn-secondary:hover {
+    background-color: #e1e1e1;
+}
+
+/* Banner */
+.banner {
+    background-color: #232f3e;
+    color: white;
+    padding: 30px 0;
+    margin-bottom: 20px;
+}
+
+.banner-content {
+    max-width: 600px;
+}
+
+.banner-content h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.banner-content p {
+    margin-bottom: 15px;
+}
+
+/* Sections */
+section {
+    margin-bottom: 30px;
+}
+
+section h2 {
+    margin-bottom: 20px;
+    font-size: 22px;
+    color: #232f3e;
+}
+
+/* Footer */
+footer {
+    background-color: #232f3e;
+    color: white;
+    padding: 40px 0 20px;
+    margin-top: auto;
+}
+
+.footer-enlaces {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.footer-col {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 20px;
+}
+
+.footer-col h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.footer-col a {
+    display: block;
+    color: #ddd;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.footer-col a:hover {
+    color: #ff9900;
+}
+
+.footer-bottom {
+    border-top: 1px solid #3a4553;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.footer-bottom p {
+    margin-bottom: 15px;
+    font-size: 12px;
+}
+
+.footer-bottom a {
+    color: #ddd;
+    margin: 0 10px;
+    font-size: 12px;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    .nav {
+        flex-direction: column;
+    }
+    
+    .search-bar {
+        margin: 10px 0;
+        width: 100%;
+    }
+    
+    .nav-links {
+        width: 100%;
+        justify-content: space-around;
+        margin-top: 10px;
+    }
+    
+    .nav-links a {
+        margin: 0;
+        font-size: 12px;
+    }
+    
+    .footer-enlaces {
+        flex-direction: column;
+    }
+    
+    .footer-col {
+        margin-bottom: 30px;
+    }
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="estilousr.css">
+		<link rel="stylesheet" type="text/css" href="styles.css">
+		<title>Usuarios</title>
+	</head>
+	<body>
+		<header>
+	        <h1>Mi pagina web</h1>
+	    </header>
+
+	    <nav>
+	        <ul class="menu">
+		        <li><a href="Index.html">Inicio</a></li>
+				<li><a href="usuarios.html">Usuarios</a></li>
+				<li><a href="Mostrardatos.php">Mostrar Datos</a></li>
+				<li><a href="productos.html">Productos</a></li>			
+				<li><a href="#">Acerca de</a></li>
+				<li><a href="#">Contacto</a></li>
+	        </ul>
+	    </nav>
+
+		<form action="registration.php" method="post">
+			<label for="username">Username:</label><br>
+			<input type="text" id="username" name="username" required><br>
+			  
+			<label for="email">Email:</label><br>
+			<input type="email" id="email" name="email" required><br>
+
+			<label for="name">Nombre:</label><br>
+			<input type="name" id="name" name="name"><br>
+			  
+			<label for="password">Password:</label><br>
+			<input type="password" id="password" name="password" required><br>
+			  
+			<label for="confirm-password">Confirm Password:</label><br>
+			<input type="password" id="confirm-password" name="confirm-password" required><br>
+			  
+			<input type="submit" value="Register" class="button">
+		</form>
+	</body>
+</html>

@@ -1,0 +1,15 @@
+table.datos {
+  width: 50%;
+  border-collapse: collapse;
+}
+
+table.datos th,
+table.datos td {
+  border: 1px solid #ccc;
+  padding: 0.5em;
+  text-align: left;
+}
+
+table.datos th {
+  background-color: #f2f2f2;
+}

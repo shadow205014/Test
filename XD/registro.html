@@ -245,5 +245,151 @@
             </div>
         </div>
     </footer>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('register-form');
+            const successMessage = document.getElementById('success-message');
+            
+            // Validación en tiempo real para los campos
+            const nameInput = document.getElementById('name');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const passwordInput = document.getElementById('password');
+            const password2Input = document.getElementById('password2');
+            
+            // Funciones de validación
+            function validateName() {
+                const nameError = document.getElementById('name-error');
+                if (!nameInput.value.trim()) {
+                    nameInput.classList.add('input-error');
+                    nameError.style.display = 'block';
+                    return false;
+                } else {
+                    nameInput.classList.remove('input-error');
+                    nameError.style.display = 'none';
+                    return true;
+                }
+            }
+            
+            function validateEmail() {
+                const emailError = document.getElementById('email-error');
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(emailInput.value)) {
+                    emailInput.classList.add('input-error');
+                    emailError.style.display = 'block';
+                    return false;
+                } else {
+                    emailInput.classList.remove('input-error');
+                    emailError.style.display = 'none';
+                    return true;
+                }
+            }
+            
+            function validatePhone() {
+                const phoneError = document.getElementById('phone-error');
+                // Opcional, no requerido pero si se proporciona, validamos formato
+                if (phoneInput.value.trim() && !/^\d{9,15}$/.test(phoneInput.value.replace(/\D/g, ''))) {
+                    phoneInput.classList.add('input-error');
+                    phoneError.style.display = 'block';
+                    return false;
+                } else {
+                    phoneInput.classList.remove('input-error');
+                    phoneError.style.display = 'none';
+                    return true;
+                }
+            }
+            
+            function validatePassword() {
+                const passwordError = document.getElementById('password-error');
+                if (passwordInput.value.length < 6) {
+                    passwordInput.classList.add('input-error');
+                    passwordError.style.display = 'block';
+                    return false;
+                } else {
+                    passwordInput.classList.remove('input-error');
+                    passwordError.style.display = 'none';
+                    return true;
+                }
+            }
+            
+            function validatePassword2() {
+                const password2Error = document.getElementById('password2-error');
+                if (passwordInput.value !== password2Input.value) {
+                    password2Input.classList.add('input-error');
+                    password2Error.style.display = 'block';
+                    return false;
+                } else {
+                    password2Input.classList.remove('input-error');
+                    password2Error.style.display = 'none';
+                    return true;
+                }
+            }
+            
+            // Eventos de validación en tiempo real
+            nameInput.addEventListener('blur', validateName);
+            emailInput.addEventListener('blur', validateEmail);
+            phoneInput.addEventListener('blur', validatePhone);
+            passwordInput.addEventListener('blur', validatePassword);
+            password2Input.addEventListener('blur', validatePassword2);
+            
+            // También validamos al escribir para la contraseña y su confirmación
+            passwordInput.addEventListener('input', function() {
+                if (password2Input.value) {
+                    validatePassword2();
+                }
+            });
+            
+            password2Input.addEventListener('input', validatePassword2);
+            
+            // Manejo del envío del formulario
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validar todos los campos
+                const isNameValid = validateName();
+                const isEmailValid = validateEmail();
+                const isPhoneValid = validatePhone();
+                const isPasswordValid = validatePassword();
+                const isPassword2Valid = validatePassword2();
+                
+                if (isNameValid && isEmailValid && isPhoneValid && isPasswordValid && isPassword2Valid) {
+                    // Simulamos el envío del formulario (aquí iría el código para enviar los datos al servidor)
+                    
+                    // Mostramos mensaje de éxito y ocultamos el formulario
+                    form.style.display = 'none';
+                    successMessage.style.display = 'block';
+                    
+                    // Iniciamos cuenta regresiva para redirección
+                    let count = 5;
+                    const countdownElement = document.getElementById('countdown');
+                    
+                    const countdownInterval = setInterval(function() {
+                        count--;
+                        countdownElement.textContent = count;
+                        
+                        if (count <= 0) {
+                            clearInterval(countdownInterval);
+                            // Simular redirección a la página principal
+                            window.location.href = 'index.html';
+                        }
+                    }, 1000);
+                    
+                    // Almacenar datos del usuario en localStorage (para simular base de datos)
+                    const userData = {
+                        name: nameInput.value,
+                        email: emailInput.value,
+                        phone: phoneInput.value,
+                        registrationDate: new Date().toISOString()
+                    };
+                    
+                    // Simulamos almacenamiento (en una aplicación real esto se haría en el servidor)
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    
+                    console.log('Usuario registrado:', userData);
+                }
+            });
+        });
+    </script>
+    
 </body>
 </html>

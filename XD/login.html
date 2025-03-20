@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiTienda - Iniciar sesión</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <script src="js/auth.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><a href="index.html">MiTienda</a></h1>
+            </div>
+            <div class="nav">
+                <div class="search-bar">
+                    <input type="text" placeholder="Buscar productos...">
+                    <button>Buscar</button>
+                </div>
+                <div class="nav-links">
+                    <a href="carrito.html">Carrito <span id="cart-count">0</span></a>
+                    <a href="pedidos.html">Mis Pedidos</a>
+                    <a href="ayuda.html">Ayuda</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="auth-container">
+            <h2>Iniciar sesión</h2>
+            <div id="error-message" class="error-message"></div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email o número de teléfono</label>
+                    <input type="text" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Mantener sesión iniciada</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+            </form>
+            
+            <div class="divider">
+                <span>¿Nuevo en MiTienda?</span>
+            </div>
+            
+            <a href="registro.html" class="btn btn-secondary">Crear una cuenta</a>
+            
+            <div class="auth-links">
+                <a href="recuperar-password.html">¿Olvidaste tu contraseña?</a>
+                <a href="ayuda.html">¿Necesitas ayuda?</a>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-enlaces">
+                <div class="footer-col">
+                    <h3>Conoce MiTienda</h3>
+                    <a href="#">Sobre nosotros</a>
+                    <a href="#">Trabaja con nosotros</a>
+                    <a href="#">Nuestras tiendas</a>
+                </div>
+                <div class="footer-col">
+                    <h3>Comprar</h3>
+                    <a href="#">Métodos de pago</a>
+                    <a href="#">Envíos</a>
+                    <a href="#">Devoluciones</a>
+                </div>
+                <div class="footer-col">
+                    <h3>Ayuda</h3>
+                    <a href="#">Centro de ayuda</a>
+                    <a href="#">Contacto</a>
+                    <a href="#">Reclamaciones</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 MiTienda. Todos los derechos reservados.</p>
+                <div>
+                    <a href="#">Condiciones de uso</a>
+                    <a href="#">Aviso de privacidad</a>
+                    <a href="#">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

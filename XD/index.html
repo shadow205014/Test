@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MiTienda - Iniciar sesión</title>
+    <title>MiTienda - Tu tienda online</title>
     <style>
         * {
             margin: 0;
@@ -78,82 +78,156 @@
             font-size: 14px;
         }
         
-        /* Login Form */
-        .login-container {
-            max-width: 350px;
-            margin: 30px auto;
-            background-color: white;
+        /* Categories bar */
+        .categories {
+            background-color: #232f3e;
+            padding: 10px 0;
+        }
+        
+        .categories ul {
+            display: flex;
+            list-style: none;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .categories li a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+        
+        .categories li a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Hero section */
+        .hero {
+            height: 300px;
+            background-color: #eaeded;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #131921;
+            text-align: center;
+            background-image: linear-gradient(to right, #f5f5f5, #e0e0e0);
+        }
+        
+        .hero-content {
+            z-index: 1;
             padding: 20px;
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
         }
         
-        .login-container h2 {
-            margin-bottom: 20px;
-            font-weight: normal;
-        }
-        
-        .form-group {
+        .hero h2 {
+            font-size: 28px;
             margin-bottom: 15px;
         }
         
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 3px;
+        .hero p {
+            margin-bottom: 20px;
         }
         
         .btn {
-            width: 100%;
-            padding: 10px;
+            padding: 10px 20px;
             background-color: #ff9900;
             color: #111;
             border: none;
             border-radius: 3px;
             cursor: pointer;
-            margin-top: 10px;
+            text-decoration: none;
+            display: inline-block;
         }
         
         .btn:hover {
             background-color: #e88e00;
         }
         
-        .divider {
-            text-align: center;
-            margin: 15px 0;
-            position: relative;
+        /* Product grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
         }
         
-        .divider::before {
-            content: "";
-            display: block;
-            width: 100%;
-            height: 1px;
-            background-color: #ddd;
-            position: absolute;
-            top: 50%;
-        }
-        
-        .divider span {
-            position: relative;
+        .product-card {
             background-color: white;
-            padding: 0 10px;
-            color: #767676;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .product-img {
+            height: 150px;
+            width: 100%;
+            background-color: #f0f0f0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #777;
             font-size: 12px;
         }
         
-        .register-link {
+        .product-title {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .product-price {
+            font-weight: bold;
+            color: #B12704;
+            margin-bottom: 10px;
+        }
+        
+        .product-rating {
+            color: #ff9900;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        /* Features section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .feature {
+            background-color: white;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
             text-align: center;
-            margin-top: 15px;
-            font-size: 13px;
+        }
+        
+        .feature h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .feature p {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-icon {
+            font-size: 30px;
+            margin-bottom: 15px;
+            color: #ff9900;
         }
         
         /* Footer styles */
@@ -171,6 +245,17 @@
             margin: 0 10px;
             text-decoration: none;
         }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .footer-links a {
+            margin: 5px 10px;
+        }
     </style>
 </head>
 <body>
@@ -185,6 +270,7 @@
                     <button>Buscar</button>
                 </div>
                 <div class="nav-links">
+                    <a href="#">Iniciar sesión</a>
                     <a href="#">Carrito</a>
                     <a href="#">Mis Pedidos</a>
                     <a href="#">Ayuda</a>
@@ -193,41 +279,117 @@
         </div>
     </header>
     
+    <div class="categories">
+        <div class="container">
+            <ul>
+                <li><a href="#">Electrónica</a></li>
+                <li><a href="#">Moda</a></li>
+                <li><a href="#">Hogar</a></li>
+                <li><a href="#">Juguetes</a></li>
+                <li><a href="#">Deportes</a></li>
+                <li><a href="#">Libros</a></li>
+                <li><a href="#">Belleza</a></li>
+                <li><a href="#">Ofertas</a></li>
+                <li><a href="#">Super</a></li>
+            </ul>
+        </div>
+    </div>
+    
     <main class="container">
-        <div class="login-container">
-            <h2>Iniciar sesión</h2>
-            <form action="#" method="post">
-                <div class="form-group">
-                    <label for="email">Email o número de teléfono</label>
-                    <input type="text" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Contraseña</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn">Iniciar sesión</button>
-            </form>
-            
-            <div class="divider">
-                <span>¿Nuevo en MiTienda?</span>
+        <div class="hero">
+            <div class="hero-content">
+                <h2>Bienvenido a MiTienda</h2>
+                <p>Descubre miles de productos con los mejores precios y envío gratuito en pedidos superiores a 50€.</p>
+                <a href="#" class="btn">Ver ofertas del día</a>
+            </div>
+        </div>
+        
+        <h2>Productos destacados</h2>
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="product-img">Imagen del producto</div>
+                <h3 class="product-title">Smartphone Último Modelo</h3>
+                <div class="product-price">599,99 €</div>
+                <div class="product-rating">★★★★☆</div>
+                <a href="#" class="btn" style="width: 100%; font-size: 12px;">Añadir al carrito</a>
             </div>
             
-            <a href="#"><button class="btn" style="background-color: #f0f0f0; color: #111;">Crear una cuenta</button></a>
+            <div class="product-card">
+                <div class="product-img">Imagen del producto</div>
+                <h3 class="product-title">Portátil Ultraligero</h3>
+                <div class="product-price">899,99 €</div>
+                <div class="product-rating">★★★★★</div>
+                <a href="#" class="btn" style="width: 100%; font-size: 12px;">Añadir al carrito</a>
+            </div>
             
-            <div class="register-link">
-                <a href="#">¿Olvidaste tu contraseña?</a>
+            <div class="product-card">
+                <div class="product-img">Imagen del producto</div>
+                <h3 class="product-title">Auriculares Inalámbricos</h3>
+                <div class="product-price">79,99 €</div>
+                <div class="product-rating">★★★★☆</div>
+                <a href="#" class="btn" style="width: 100%; font-size: 12px;">Añadir al carrito</a>
+            </div>
+            
+            <div class="product-card">
+                <div class="product-img">Imagen del producto</div>
+                <h3 class="product-title">Zapatillas Deportivas</h3>
+                <div class="product-price">69,99 €</div>
+                <div class="product-rating">★★★★☆</div>
+                <a href="#" class="btn" style="width: 100%; font-size: 12px;">Añadir al carrito</a>
+            </div>
+            
+            <div class="product-card">
+                <div class="product-img">Imagen del producto</div>
+                <h3 class="product-title">Robot Aspirador</h3>
+                <div class="product-price">249,99 €</div>
+                <div class="product-rating">★★★★★</div>
+                <a href="#" class="btn" style="width: 100%; font-size: 12px;">Añadir al carrito</a>
+            </div>
+            
+            <div class="product-card">
+                <div class="product-img">Imagen del producto</div>
+                <h3 class="product-title">Smartwatch Deportivo</h3>
+                <div class="product-price">129,99 €</div>
+                <div class="product-rating">★★★★☆</div>
+                <a href="#" class="btn" style="width: 100%; font-size: 12px;">Añadir al carrito</a>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🚚</div>
+                <h3>Envío rápido</h3>
+                <p>Envío gratuito en pedidos superiores a 50€. Recibe tu pedido en 24-48 horas.</p>
+                <a href="#" class="btn" style="font-size: 12px;">Más información</a>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">🔒</div>
+                <h3>Pago seguro</h3>
+                <p>Múltiples métodos de pago 100% seguros. Tarjeta, PayPal o contra reembolso.</p>
+                <a href="#" class="btn" style="font-size: 12px;">Más información</a>
+            </div>
+            
+            <div class="feature">
+                <div class="feature-icon">↩️</div>
+                <h3>Devoluciones fáciles</h3>
+                <p>30 días para devoluciones. Si no te gusta, te devolvemos el dinero.</p>
+                <a href="#" class="btn" style="font-size: 12px;">Más información</a>
             </div>
         </div>
     </main>
     
     <footer>
         <div class="container">
-            <p>© 2025 MiTienda. Todos los derechos reservados.</p>
-            <div>
+            <div class="footer-links">
+                <a href="#">Sobre nosotros</a>
+                <a href="#">Trabaja con nosotros</a>
                 <a href="#">Condiciones de uso</a>
                 <a href="#">Aviso de privacidad</a>
                 <a href="#">Ayuda</a>
+                <a href="#">Contacto</a>
             </div>
+            <p>© 2025 MiTienda. Todos los derechos reservados.</p>
         </div>
     </footer>
 </body>

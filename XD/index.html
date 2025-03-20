@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiTienda - Tu tienda online</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/productos.css">
+    <script src="js/main.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1><a href="index.html">MiTienda</a></h1>
+            </div>
+            <div class="nav">
+                <div class="search-bar">
+                    <input type="text" placeholder="Buscar productos...">
+                    <button>Buscar</button>
+                </div>
+                <div class="nav-links">
+                    <a href="carrito.html">Carrito <span id="cart-count">0</span></a>
+                    <a href="pedidos.html">Mis Pedidos</a>
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-btn" id="user-menu">Mi Cuenta</a>
+                        <div class="dropdown-content">
+                            <div id="logged-in-menu" style="display: none;">
+                                <a href="cuenta.html">Mi Perfil</a>
+                                <a href="#" id="logout-btn">Cerrar Sesión</a>
+                            </div>
+                            <div id="logged-out-menu">
+                                <a href="login.html">Iniciar Sesión</a>
+                                <a href="registro.html">Registrarse</a>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="ayuda.html">Ayuda</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="banner">
+        <div class="container">
+            <div class="banner-content">
+                <h2>Ofertas especiales</h2>
+                <p>Descubre nuestras increíbles ofertas del día</p>
+                <a href="#ofertas" class="btn">Ver ofertas</a>
+            </div>
+        </div>
+    </section>
+    
+    <main class="container">
+        <section class="categorias">
+            <h2>Categorías populares</h2>
+            <div class="categoria-grid">
+                <a href="#" class="categoria-item">
+                    <img src="/api/placeholder/150/150" alt="Electrónica">
+                    <span>Electrónica</span>
+                </a>
+                <a href="#" class="categoria-item">
+                    <img src="/api/placeholder/150/150" alt="Hogar">
+                    <span>Hogar</span>
+                </a>
+                <a href="#" class="categoria-item">
+                    <img src="/api/placeholder/150/150" alt="Moda">
+                    <span>Moda</span>
+                </a>
+                <a href="#" class="categoria-item">
+                    <img src="/api/placeholder/150/150" alt="Libros">
+                    <span>Libros</span>
+                </a>
+                <a href="#" class="categoria-item">
+                    <img src="/api/placeholder/150/150" alt="Deportes">
+                    <span>Deportes</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="productos" id="ofertas">
+            <h2>Productos destacados</h2>
+            <div class="filtros">
+                <select id="ordenar">
+                    <option value="relevancia">Ordenar por relevancia</option>
+                    <option value="precio-asc">Precio: menor a mayor</option>
+                    <option value="precio-desc">Precio: mayor a menor</option>
+                    <option value="calificacion">Calificación</option>
+                </select>
+                <button id="filtro-btn">Filtros</button>
+            </div>
+            <div class="producto-grid" id="productos-container">
+                <!-- Los productos se cargarán dinámicamente con JavaScript -->
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-enlaces">
+                <div class="footer-col">
+                    <h3>Conoce MiTienda</h3>
+                    <a href="#">Sobre nosotros</a>
+                    <a href="#">Trabaja con nosotros</a>
+                    <a href="#">Nuestras tiendas</a>
+                </div>
+                <div class="footer-col">
+                    <h3>Comprar</h3>
+                    <a href="#">Métodos de pago</a>
+                    <a href="#">Envíos</a>
+                    <a href="#">Devoluciones</a>
+                </div>
+                <div class="footer-col">
+                    <h3>Ayuda</h3>
+                    <a href="#">Centro de ayuda</a>
+                    <a href="#">Contacto</a>
+                    <a href="#">Reclamaciones</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 MiTienda. Todos los derechos reservados.</p>
+                <div>
+                    <a href="#">Condiciones de uso</a>
+                    <a href="#">Aviso de privacidad</a>
+                    <a href="#">Cookies</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

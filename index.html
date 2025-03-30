@@ -38,6 +38,25 @@
             border-radius: 50%;
         }
         
+        .banner-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%; /* Ancho relativo a la pantalla */
+            max-width: 1200px; /* Ancho máximo */
+            z-index: 5;
+            overflow: hidden;
+        }
+        
+        .banner {
+            width: 100%;
+            height: auto;
+            display: block;
+            /* Agregamos un borde sutil para destacar el banner */
+            box-shadow: 0 0 20px rgba(102, 204, 255, 0.4);
+        }
+        
         .planet {
             position: absolute;
             width: 15vw;
@@ -161,11 +180,28 @@
                 text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.5), 0 0 40px rgba(102, 204, 255, 0.7);
             }
         }
+        
+        /* Ajuste responsivo para el banner */
+        @media (max-width: 768px) {
+            .banner-container {
+                width: 95%;
+            }
+            
+            .content {
+                padding-top: 20vh; /* Dar más espacio cuando la pantalla es pequeña */
+            }
+        }
     </style>
 </head>
 <body>
     <div class="space-background"></div>
     <div class="stars-container" id="starsContainer"></div>
+    
+    <!-- Banner central superior -->
+    <div class="banner-container">
+        <img src="banner.png" alt="Banner" class="banner" id="banner">
+    </div>
+    
     <div class="planet" id="planet1"></div>
     
     <div class="saturn-system" id="saturnSystem">
@@ -203,7 +239,21 @@
             };
         }
         
-        // Función para crear estrellas aleatorias con distancia mínima y evitando planetas
+        // Función para obtener la posición y el tamaño del banner
+        function getBannerInfo() {
+            const banner = document.getElementById('banner');
+            if (!banner) return null;
+            
+            const rect = banner.getBoundingClientRect();
+            return {
+                x: rect.left,
+                y: rect.top,
+                width: rect.width,
+                height: rect.height
+            };
+        }
+        
+        // Función para crear estrellas aleatorias con distancia mínima y evitando planetas y banner
         function createStars() {
             const container = document.getElementById('starsContainer');
             const containerWidth = window.innerWidth;
@@ -217,6 +267,9 @@
             const planet2 = document.getElementById('planet2');
             const planet1Info = getPlanetInfo(planet1);
             const planet2Info = getPlanetInfo(planet2);
+            
+            // Obtenemos información del banner
+            const bannerInfo = getBannerInfo();
             
             // Configuración de estrellas
             const starCount = Math.floor(containerWidth * containerHeight / 2000);
@@ -239,6 +292,13 @@
                     // Verificamos que no esté sobre ningún planeta
                     if (isPointInCircle(x, y, planet1Info.x, planet1Info.y, planet1Info.radius) ||
                         isPointInCircle(x, y, planet2Info.x, planet2Info.y, planet2Info.radius)) {
+                        continue;
+                    }
+                    
+                    // Verificamos que no esté sobre el banner
+                    if (bannerInfo && 
+                        x >= bannerInfo.x && x <= bannerInfo.x + bannerInfo.width &&
+                        y >= bannerInfo.y && y <= bannerInfo.y + bannerInfo.height) {
                         continue;
                     }
                     
@@ -441,7 +501,13 @@
         
         // Inicializamos todo cuando se carga la página
         window.addEventListener('load', function() {
-            createStars();
+            // Esperamos a que el banner se cargue primero
+            const banner = document.getElementById('banner');
+            if (banner.complete) {
+                createStars();
+            } else {
+                banner.onload = createStars;
+            }
             setupComet();
         });
         
@@ -450,7 +516,7 @@
             // Limpiamos todas las estrellas existentes
             document.getElementById('starsContainer').innerHTML = '';
             // Creamos nuevas estrellas ajustadas al nuevo tamaño
-            createStars();
+            setTimeout(createStars, 100); // Pequeño retraso para asegurar que el banner se ha ajustado
         });
     </script>
 </body>

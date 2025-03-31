@@ -49,12 +49,53 @@
             overflow: hidden;
         }
         
-        .banner {
+        .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 30vh; /* Altura base relativa al viewport */
+        min-height: 100px; /* Altura mínima */
+        max-height: 300px; /* Altura máxima */
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        background: transparent;
+        transition: height 0.3s ease;
+        }
+
+        .header img {
             width: 100%;
-            height: auto;
-            display: block;
-            /* Agregamos un borde sutil para destacar el banner */
-            box-shadow: 0 0 20px rgba(102, 204, 255, 0.4);
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            min-width: 100%;
+            min-height: 100%;
+        }
+
+        .content {
+            padding-top: 30vh; /* Igual a la altura del header */
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                height: 25vh;
+                min-height: 80px;
+            }
+            .content {
+                padding-top: 25vh;
+            }
+        }
+
+        @media (orientation: portrait) {
+            .header {
+                height: 20vh;
+            }
+            .content {
+                padding-top: 0vh;
+            }
         }
         
         .planet {
@@ -198,9 +239,9 @@
     <div class="stars-container" id="starsContainer"></div>
     
     <!-- Banner central superior -->
-    <div class="banner-container">
-        <img src="Logo_Novaverse.png" alt="Banner" class="banner" id="banner">
-    </div>
+    <header class="header">
+        <img src="Logo_Novaverse.png" alt="NovaVerse Logo">
+    </header>
     
     <div class="planet" id="planet1"></div>
     

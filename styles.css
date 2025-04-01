@@ -260,3 +260,95 @@ body, html {
     align-items: center;
     gap: 5px;
 }
+
+/* Add these styles to your styles.css file */
+
+.beta-registration {
+    margin-top: 20px;
+    animation: fadeIn 1.5s ease-in-out forwards;
+    opacity: 0;
+    animation-delay: 0.5s;
+}
+
+.beta-text {
+    color: white;
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    margin-bottom: 15px;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.beta-button {
+    display: inline-block;
+    padding: 12px 25px;
+    background: linear-gradient(45deg, #ff00cc, #3333ff);
+    color: white;
+    border-radius: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 0, 204, 0.5);
+    letter-spacing: 1px;
+}
+
+.beta-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 0, 204, 0.8);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Styles for rickroll page */
+.prank-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 20px;
+    text-align: center;
+}
+
+.video-container {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 30px;
+}
+
+.video-container iframe {
+    width: 100%;
+    aspect-ratio: 16/9;
+    border: none;
+}
+
+.prank-message {
+    color: white;
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    animation: glow 2s infinite alternate;
+}
+
+.return-button {
+    padding: 12px 25px;
+    background: linear-gradient(45deg, #ff00cc, #3333ff);
+    color: white;
+    border-radius: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 0, 204, 0.5);
+}
+
+.return-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 0, 204, 0.8);
+}

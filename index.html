@@ -4,220 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NovaVerse (Próximamente)</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            cursor: default;
-        }
-        
-        .space-background {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #000033 0%, #000 50%, #330033 100%);
-            z-index: -2;
-        }
-        
-        .stars-container {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-        
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background-color: white;
-            border-radius: 50%;
-        }
-        
-        .header {
-        position: fixed;
-        top: 10px;
-        left: 0;
-        width: 100%;
-        height: 30vh; /* Altura base relativa al viewport */
-        min-height: 100px; /* Altura mínima */
-        max-height: 300px; /* Altura máxima */
-        z-index: 10;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: vis;
-        background: transparent;
-        transition: height 0.3s ease;
-        }
-
-        .header img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            min-width: 100%;
-            min-height: 100%;
-        }
-
-        .content {
-            padding-top: 30vh; /* Igual a la altura del header */
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                height: 25vh;
-                min-height: 80px;
-            }
-            .content {
-                padding-top: 25vh;
-            }
-        }
-
-        @media (orientation: portrait) {
-            .header {
-                height: 20vh;
-            }
-            .content {
-                padding-top: 0vh;
-            }
-        }
-
-        .planet {
-            position: absolute;
-            width: 15vw;
-            height: 15vw;
-            max-width: 150px;
-            max-height: 150px;
-            min-width: 50px;
-            min-height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #3366ff, #6633ff);
-            box-shadow: 0 0 30px #6633ff, inset -20px -20px 40px rgba(0, 0, 0, 0.5);
-            left: 10%;
-            top: 30%;
-            opacity: 0.8;
-            animation: float 15s infinite ease-in-out;
-        }
-        
-        .saturn-system {
-            position: absolute;
-            right: 15%;
-            top: 60%;
-            animation: float 20s infinite ease-in-out reverse;
-            z-index: 1;
-        }
-        
-        .saturn {
-            position: relative;
-            width: 10vw;
-            height: 10vw;
-            max-width: 100px;
-            max-height: 100px;
-            min-width: 40px;
-            min-height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #ffcc33, #ff9933);
-            box-shadow: 0 0 20px #ff9933;
-            opacity: 0.9;
-            z-index: 2;
-            margin: 0 auto;
-        }
-        
-        .saturn-ring {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%) rotate(-20deg);
-            width: 160%;
-            height: 30%;
-            border-radius: 50%;
-            border: min(0.5vw, 5px) solid rgba(255, 204, 51, 0.4);
-            z-index: 1;
-        }
-        
-        .comet {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            background-color: white;
-            border-radius: 50%;
-            box-shadow: -10px 0px 15px 5px rgba(30, 144, 255, 0.8); /* Cola de cometa azul */
-            z-index: 3;
-            cursor: pointer;
-            padding: 10px;
-            margin: -10px;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        
-        .comet:hover {
-            box-shadow: -12px 0px 20px 8px rgba(30, 144, 255, 1);
-        }
-        
-        .content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            color: white;
-            z-index: 4;
-            width: 90%;
-            max-width: 600px;
-        }
-        
-        .content h1 {
-            font-size: clamp(2rem, 8vw, 4rem);
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: clamp(2px, 1vw, 5px);
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
-            animation: glow 2s infinite alternate;
-        }
-        
-        .click-message {
-            position: absolute;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 14px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-            z-index: 5;
-        }
-        
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-20px) rotate(5deg);
-            }
-        }
-        
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
-            }
-            to {
-                text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.5), 0 0 40px rgba(102, 204, 255, 0.7);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="space-background"></div>
     <div class="stars-container" id="starsContainer"></div>
     
     <header class="header">
-        <img src="Logo.png" alt="NovaVerse Logo">
+        <img src="Loetras_con_rayita.png" alt="NovaVerse Logo">
     </header>
     
     <div class="planet" id="planet1"></div>
@@ -234,343 +28,70 @@
         <h1>PRÓXIMAMENTE</h1>
     </div>
 
-    <script>
-        // Función para generar un número aleatorio dentro de un rango
-        function randomInRange(min, max) {
-            return Math.random() * (max - min) + min;
-        }
+    <footer class="social-footer">
+        <div class="footer-heading">
+            <div>Síguenos en:</div>
+        </div>
         
-        // Función para verificar si un punto está dentro de un círculo
-        function isPointInCircle(pointX, pointY, circleX, circleY, radius) {
-            const dx = pointX - circleX;
-            const dy = pointY - circleY;
-            return dx * dx + dy * dy <= radius * radius;
-        }
-        
-        // Función para obtener la posición y el radio de un planeta
-        function getPlanetInfo(planetElement) {
-            const rect = planetElement.getBoundingClientRect();
-            return {
-                x: rect.left + rect.width / 2,
-                y: rect.top + rect.height / 2,
-                radius: rect.width / 2 + 20 // Añadimos un margen alrededor
-            };
-        }
-        
-        // Función para crear estrellas aleatorias con distancia mínima y evitando planetas
-        function createStars() {
-            const container = document.getElementById('starsContainer');
-            const containerWidth = window.innerWidth;
-            const containerHeight = window.innerHeight;
-            
-            // Solo creamos estrellas si el contenedor está vacío
-            if (container.children.length > 0) return;
-            
-            // Obtenemos información de los planetas para evitar colocar estrellas sobre ellos
-            const planet1 = document.getElementById('planet1');
-            const planet2 = document.getElementById('planet2');
-            const planet1Info = getPlanetInfo(planet1);
-            const planet2Info = getPlanetInfo(planet2);
-            
-            // Configuración de estrellas
-            const starCount = Math.floor(containerWidth * containerHeight / 2000);
-            const minDistance = 30; // Distancia mínima entre estrellas
-            
-            const stars = [];
-            
-            // Intentamos crear estrellas con distancia mínima entre ellas
-            for (let i = 0; i < starCount; i++) {
-                let attempts = 0;
-                let valid = false;
-                let x, y;
-                
-                // Intentamos encontrar una posición válida
-                while (!valid && attempts < 10) {
-                    attempts++;
-                    x = randomInRange(0, containerWidth);
-                    y = randomInRange(0, containerHeight);
-                    
-                    // Verificamos que no esté sobre ningún planeta
-                    if (isPointInCircle(x, y, planet1Info.x, planet1Info.y, planet1Info.radius) ||
-                        isPointInCircle(x, y, planet2Info.x, planet2Info.y, planet2Info.radius)) {
-                        continue;
-                    }
-                    
-                    valid = true;
-                    // Verificamos la distancia con otras estrellas
-                    for (const star of stars) {
-                        const dx = star.x - x;
-                        const dy = star.y - y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-                        
-                        if (distance < minDistance) {
-                            valid = false;
-                            break;
-                        }
-                    }
-                }
-                
-                // Si encontramos una posición válida, creamos la estrella
-                if (valid) {
-                    const star = document.createElement('div');
-                    star.className = 'star';
-                    star.style.left = `${x}px`;
-                    star.style.top = `${y}px`;
-                    
-                    // Variamos el tamaño y brillo para dar más realismo
-                    const size = randomInRange(1, 3);
-                    star.style.width = `${size}px`;
-                    star.style.height = `${size}px`;
-                    
-                    // Aseguramos que la opacidad base nunca sea menor al 50%
-                    const baseOpacity = randomInRange(0.5, 1);
-                    star.style.opacity = baseOpacity;
-                    
-                    // Guardamos la posición para la verificación de distancia
-                    stars.push({ x, y });
-                    container.appendChild(star);
-                    
-                    // Añadimos un destello aleatorio para el 70% de las estrellas
-                    if (Math.random() > 0.3) {
-                        // Creamos una animación personalizada para cada estrella que nunca baje del 50% de opacidad
-                        const minOpacity = 0.5;
-                        const maxOpacity = baseOpacity;
-                        const animationName = `twinkle${i}`;
-                        const duration = randomInRange(1, 5);
-                        
-                        // Creamos un estilo para la animación personalizada
-                        const styleEl = document.createElement('style');
-                        styleEl.innerHTML = `
-                            @keyframes ${animationName} {
-                                0% { opacity: ${maxOpacity}; }
-                                50% { opacity: ${minOpacity}; }
-                                100% { opacity: ${maxOpacity}; }
-                            }
-                        `;
-                        document.head.appendChild(styleEl);
-                        
-                        // Aplicamos la animación personalizada
-                        star.style.animation = `${animationName} ${duration}s infinite alternate`;
-                    }
-                }
-            }
-        }
-        
-        // Función para calcular nueva posición del cometa con trayectoria recta aleatoria
-        function calculateCometTrajectory() {
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
-            
-            // Generamos un ángulo aleatorio (en radianes)
-            const angle = randomInRange(0, Math.PI * 2);
-            
-            // Calculamos las coordenadas iniciales y finales
-            let startX, startY, endX, endY;
-            
-            // Determinamos si empieza en horizontal o vertical
-            if (Math.random() > 0.5) {
-                // Empieza en los bordes horizontales (arriba o abajo)
-                startX = randomInRange(0, windowWidth);
-                startY = Math.random() > 0.5 ? -20 : windowHeight + 20;
-                
-                // La dirección es opuesta al punto de inicio
-                endX = startX + Math.cos(angle) * windowWidth * 2;
-                endY = startY + Math.sin(angle) * windowHeight * 2;
-            } else {
-                // Empieza en los bordes verticales (izquierda o derecha)
-                startX = Math.random() > 0.5 ? -20 : windowWidth + 20;
-                startY = randomInRange(0, windowHeight);
-                
-                // La dirección es opuesta al punto de inicio
-                endX = startX + Math.cos(angle) * windowWidth * 2;
-                endY = startY + Math.sin(angle) * windowHeight * 2;
-            }
-            
-            // Aseguramos que la trayectoria atraviese la pantalla
-            // Extendemos la línea para garantizar que cruce completamente la pantalla
-            const dx = endX - startX;
-            const dy = endY - startY;
-            
-            // Calculamos la duración de la animación (entre 3 y 6 segundos)
-            const duration = randomInRange(3, 6);
-            
-            return { startX, startY, endX, endY, angle, duration };
-        }
-        
-        // Función para animar el cometa
-        function animateComet() {
-            const comet = document.getElementById('comet');
-            const trajectory = calculateCometTrajectory();
-            
-            // Posicionamos el cometa en su punto inicial
-            comet.style.left = `${trajectory.startX}px`;
-            comet.style.top = `${trajectory.startY}px`;
-            comet.style.opacity = '1';
-            
-            // Calculamos la rotación para que la cola siempre apunte en la dirección correcta
-            const radiansToDegrees = (rad) => rad * (180 / Math.PI);
-            const rotation = radiansToDegrees(Math.atan2(trajectory.endY - trajectory.startY, trajectory.endX - trajectory.startX)) + 180;
-            
-            // Ajustamos la rotación de la cola
-            comet.style.boxShadow = `${10 * Math.cos(trajectory.angle + Math.PI)}px ${10 * Math.sin(trajectory.angle + Math.PI)}px 15px 5px rgba(30, 144, 255, 0.8)`;
-            
-            // Creamos y aplicamos la animación usando keyframes
-            const animationName = `cometPath${Date.now()}`;
-            
-            // Creamos un estilo para la animación
-            const styleEl = document.createElement('style');
-            styleEl.innerHTML = `
-                @keyframes ${animationName} {
-                    0% {
-                        left: ${trajectory.startX}px;
-                        top: ${trajectory.startY}px;
-                        opacity: 1;
-                    }
-                    90% {
-                        opacity: 1;
-                    }
-                    100% {
-                        left: ${trajectory.endX}px;
-                        top: ${trajectory.endY}px;
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(styleEl);
-            
-            // Aplicamos la animación
-            comet.style.animation = `${animationName} ${trajectory.duration}s linear forwards`;
-            
-            // Limpiamos y programamos el próximo cometa
-            setTimeout(() => {
-                comet.style.opacity = '0';
-                comet.style.animation = '';
-                document.head.removeChild(styleEl);
-                
-                // Programamos el próximo cometa
-                scheduleNextComet();
-            }, trajectory.duration * 1000);
-        }
-        
-        // Función para programar el próximo cometa
-        function scheduleNextComet() {
-            // Entre 30 segundos y 10 minutos (en milisegundos)
-            const minDelay = 30 * 1000;
-            const maxDelay = 10 * 60 * 1000;
-            const delay = randomInRange(minDelay, maxDelay);
-            
-            setTimeout(animateComet, delay);
-        }
-        
-        // Configuramos el comportamiento del cometa
-        function setupComet() {
-            const comet = document.getElementById('comet');
-            const clickMessage = document.getElementById('clickMessage');
-            
-            // Mostramos un mensaje al pasar el ratón por encima
-            comet.addEventListener('mouseover', function(e) {
-                clickMessage.style.left = (e.clientX + 10) + 'px';
-                clickMessage.style.top = (e.clientY + 10) + 'px';
-                clickMessage.style.opacity = '1';
-            });
-            
-            comet.addEventListener('mouseout', function() {
-                clickMessage.style.opacity = '0';
-            });
-            
-            // Al hacer clic, redirigimos a index.html
-            comet.addEventListener('click', function() {
-                window.location.href = 'index.html';
-            });
-            
-            // Actualizamos la posición del mensaje al mover el ratón sobre el cometa
-            comet.addEventListener('mousemove', function(e) {
-                clickMessage.style.left = (e.clientX + 10) + 'px';
-                clickMessage.style.top = (e.clientY + 10) + 'px';
-            });
-            
-            // Iniciamos la secuencia de aparición de cometas
-            scheduleNextComet();
-        }
-        
-        // Inicializamos todo cuando se carga la página
-        window.addEventListener('load', function() {
-            createStars();
-            setupComet();
-        });
-        
-        // Solo recreamos las estrellas al cambiar el tamaño de la ventana
-        window.addEventListener('resize', function() {
-            // Limpiamos todas las estrellas existentes
-            document.getElementById('starsContainer').innerHTML = '';
-            // Creamos nuevas estrellas ajustadas al nuevo tamaño
-            createStars();
-        });
-    </script>
-    <footer style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); color: rgb(223, 46, 193); font-size: 14px; z-index: 5; background-color: rgba(0, 0, 0, 0.3); padding: 15px 20px; border-radius: 20px; width: auto; max-width: 90%;">
-    <div style="text-align: center; margin-bottom: 15px;">
-        <div style="font-size: 16px; font-weight: bold; margin-bottom: 5px;">Síguenos en:</div>
-    </div>
-    
-    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
-        <!-- Primera persona -->
-        <div style="display: flex; flex-direction: column; align-items: center;">
-            <div style="font-weight: bold; margin-bottom: 8px;">Shadow205014</div>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <!-- Twitter/X -->
-                <a href="https://x.com/Shadow205014" target="_blank" style="color: rgb(223, 46, 193); text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgb(223, 46, 193)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
-                    Twitter
-                </a>
-                <!-- Twitch -->
-                <a href="https://www.twitch.tv/shadow205014" target="_blank" style="color: rgb(223, 46, 193); text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgb(223, 46, 193)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2H3v16h5v4l4-4h5l4-4V2L21 2z"></path><path d="M11 11V7M16 11V7"></path></svg>
-                    Twitch
-                </a>
-                <!-- GitHub -->
-                <a href="https://github.com/shadow205014" target="_blank" style="color: rgb(223, 46, 193); text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgb(223, 46, 193)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
-                    GitHub
-                </a>
+        <div class="social-profiles">
+            <!-- Primera persona -->
+            <div class="profile">
+                <div class="profile-name">Shadow205014</div>
+                <div class="social-links">
+                    <!-- Twitter/X -->
+                    <a href="https://x.com/Shadow205014" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+                        Twitter
+                    </a>
+                    <!-- Twitch -->
+                    <a href="https://www.twitch.tv/shadow205014" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2H3v16h5v4l4-4h5l4-4V2L21 2z"></path><path d="M11 11V7M16 11V7"></path></svg>
+                        Twitch
+                    </a>
+                    <!-- GitHub -->
+                    <a href="https://github.com/shadow205014" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+
+            <!-- Segunda persona -->
+            <div class="profile">
+                <div class="profile-name">SamGLXY</div>
+                <div class="social-links">
+                    <!-- Twitter/X -->
+                    <a href="https://x.com/LuffyS_Galaxy" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+                        Twitter
+                    </a>
+                    <!-- Twitch -->
+                    <a href="https://www.twitch.tv/luffysgalaxy" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2H3v16h5v4l4-4h5l4-4V2L21 2z"></path><path d="M11 11V7M16 11V7"></path></svg>
+                        Twitch
+                    </a>
+                    <!-- TikTok -->
+                    <a href="https://www.tiktok.com/@luffysgalaxy" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 11.2V4h3.4a3 3 0 0 0 1.8 1.8v3.4h-2a9 9 0 0 1-7.6 8.4h-.8a5 5 0 0 1-5-5c0-2.8 2.2-5 5-5 .6 0 1.2.1 1.7.3V11c-.5-.3-1.2-.5-1.8-.5a3 3 0 0 0-2.9 3c0 1.3.8 2.4 2 2.8a7 7 0 0 0 6.2-5.1"></path></svg>
+                        TikTok
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tercera persona -->
+            <div class="profile">
+                <div class="profile-name">Coquita_2312</div>
+                <div class="social-links">
+                    <!-- Instagram -->
+                    <a href="#" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        Instagram
+                    </a>
+                </div>
             </div>
         </div>
+    </footer>
 
-        <!-- Segunda persona -->
-        <div style="display: flex; flex-direction: column; align-items: center;">
-            <div style="font-weight: bold; margin-bottom: 8px;">SamGLXY</div>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <!-- Twitter/X -->
-                <a href="https://x.com/LuffyS_Galaxy" target="_blank" style="color: rgb(223, 46, 193); text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgb(223, 46, 193)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
-                    Twitter
-                </a>
-                <!-- Twitch -->
-                <a href="https://www.twitch.tv/luffysgalaxy" target="_blank" style="color: rgb(223, 46, 193); text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgb(223, 46, 193)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2H3v16h5v4l4-4h5l4-4V2L21 2z"></path><path d="M11 11V7M16 11V7"></path></svg>
-                    Twitch
-                </a>
-                <!-- TikTok -->
-                <a href="https://www.tiktok.com/@luffysgalaxy" target="_blank" style="color: rgb(223, 46, 193); text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgb(223, 46, 193)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 11.2V4h3.4a3 3 0 0 0 1.8 1.8v3.4h-2a9 9 0 0 1-7.6 8.4h-.8a5 5 0 0 1-5-5c0-2.8 2.2-5 5-5 .6 0 1.2.1 1.7.3V11c-.5-.3-1.2-.5-1.8-.5a3 3 0 0 0-2.9 3c0 1.3.8 2.4 2 2.8a7 7 0 0 0 6.2-5.1"></path></svg>
-                    TikTok
-                </a>
-            </div>
-        </div>
-
-         <!-- Tercera persona -->
-         <div style="display: flex; flex-direction: column; align-items: center;">
-            <div style="font-weight: bold; margin-bottom: 8px;">Coquita_2312</div>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                
-                <!-- Instagram -->
-                <a href="#" target="_blank" style="color: rgb(223, 46, 193); text-decoration: none; display: flex; align-items: center; gap: 5px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgb(223, 46, 193)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                    Instagram
-                </a>
-
-            </div>
-        </div>
-    </div>
-</footer>
+    <script src="script.js"></script>
 </body>
 </html>

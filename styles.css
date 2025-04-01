@@ -315,24 +315,48 @@ body, html {
     height: 100vh;
     padding: 20px;
     text-align: center;
+    width: 100%;
+    max-width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
 }
 
 .video-container {
-    width: 100%;
-    max-width: 800px;
-    margin-bottom: 30px;
+    width: 90%;
+    max-width: 1000px;
+    margin: 0 auto 30px;
+    position: relative;
+    display: flex;
+    justify-content: center;
 }
 
-.video-container iframe {
+.video-wrapper {
+    position: relative;
     width: 100%;
-    aspect-ratio: 16/9;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(255, 0, 204, 0.3);
+    border-radius: 8px;
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     border: none;
 }
 
 .prank-message {
     color: white;
     font-size: clamp(1.5rem, 5vw, 2.5rem);
-    margin-bottom: 30px;
+    margin: 30px 0;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     animation: glow 2s infinite alternate;
 }
@@ -351,4 +375,17 @@ body, html {
 .return-button:hover {
     transform: scale(1.05);
     box-shadow: 0 0 20px rgba(255, 0, 204, 0.8);
+}
+
+/* Media queries for responsive video size */
+@media (min-width: 1200px) {
+    .video-container {
+        width: 70%;
+    }
+}
+
+@media (max-width: 768px) {
+    .video-container {
+        width: 95%;
+    }
 }

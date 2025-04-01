@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaVerse Beta - ¡Registro Completado!</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="space-background"></div>
+    <div class="stars-container" id="starsContainer"></div>
+    
+    <div class="prank-container">
+        <div class="video-container">
+            <!-- Embed para el video de Rick Astley - Never Gonna Give You Up -->
+            <iframe 
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+        </div>
+        
+        <div class="prank-message">
+            ¡Feliz Día de los Inocentes!<br>
+            El registro beta estará disponible pronto.
+        </div>
+        
+        <a href="index.html" class="return-button">Volver a la página principal</a>
+    </div>
+
+    <script>
+        // Función para crear estrellas similar a la de la página principal
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            const containerWidth = window.innerWidth;
+            const containerHeight = window.innerHeight;
+            
+            if (container.children.length > 0) return;
+            
+            const starCount = Math.floor(containerWidth * containerHeight / 2000);
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * containerWidth}px`;
+                star.style.top = `${Math.random() * containerHeight}px`;
+                
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                const baseOpacity = Math.random() * 0.5 + 0.5;
+                star.style.opacity = baseOpacity;
+                
+                if (Math.random() > 0.3) {
+                    const duration = Math.random() * 4 + 1;
+                    star.style.animation = `twinkle${i} ${duration}s infinite alternate`;
+                    
+                    const styleEl = document.createElement('style');
+                    styleEl.innerHTML = `
+                        @keyframes twinkle${i} {
+                            0% { opacity: ${baseOpacity}; }
+                            50% { opacity: 0.5; }
+                            100% { opacity: ${baseOpacity}; }
+                        }
+                    `;
+                    document.head.appendChild(styleEl);
+                }
+                
+                container.appendChild(star);
+            }
+        }
+
+        window.addEventListener('load', createStars);
+        
+        window.addEventListener('resize', function() {
+            document.getElementById('starsContainer').innerHTML = '';
+            createStars();
+        });
+    </script>
+</body>
+</html>

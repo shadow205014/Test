@@ -74,7 +74,7 @@ function startGame() {
     
     // Play Megalovania background music with error handling
     if (!backgroundMusic) {
-        backgroundMusic = new Audio('/1-13 Megalovania.mp3');
+        backgroundMusic = new Audio('1-13 Megalovania.mp3');
         backgroundMusic.volume = 0.3;
         backgroundMusic.loop = true;
         
@@ -609,7 +609,7 @@ function endGame() {
 
 function showGameOverAnimation() {
     const gameOverScreen = document.getElementById('gameOverScreen');
-    gameOverScreen.style.backgroundImage = "url('/undertale-game-over.gif')";
+    gameOverScreen.style.backgroundImage = "url('undertale-game-over.gif')";
     gameOverScreen.style.display = 'block';
     
     // Show the game over screen instantly
@@ -619,7 +619,7 @@ function showGameOverAnimation() {
     // Then show the "get dunked on" animation
     setTimeout(() => {
         // Switch immediately to the second gif
-        gameOverScreen.style.backgroundImage = "url('/get-dunked-on.gif')";
+        gameOverScreen.style.backgroundImage = "url('get-dunked-on.gif')";
         
         // After about half of the second animation completes, fade to black (reduced from 5 to 2.5 seconds)
         setTimeout(() => {
@@ -641,7 +641,7 @@ function playHealSound() {
 }
 
 function playGameOverSound() {
-    const sound = new Audio('/undertale-death-sound-effect-made-with-Voicemod.mp3');
+    const sound = new Audio('undertale-death-sound-effect-made-with-Voicemod.mp3');
     sound.volume = 0.3;
     sound.play().catch(e => console.log("Couldn't play game over sound:", e));
 }

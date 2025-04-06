@@ -2,7 +2,7 @@
     <style>
         @font-face {
             font-family: 'Mario64';
-            src: url('/Mario64.ttf') format('truetype');
+            src: url('Mario64.ttf') format('truetype');
         }
 
         body {
@@ -271,7 +271,7 @@ var Module = {
   },
   locateFile: function (path) {
     if (path.endsWith('.wasm')) {
-      return '/sm64.wasm';
+      return 'sm64.wasm';
     }
     return path;
   }
@@ -507,5 +507,6 @@ buttonStopwatch.addEventListener('click', () => {
     buttonStopwatch.style.background = 'rgba(0, 128, 255, 0.4)';
   }
 });</script>
-    <script src="/sm64.js"></script>
-</body></html>
+    <script src="sm64.js"></script>
+</body>
+</html>

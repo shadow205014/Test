@@ -1,0 +1,32 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sans Dodging Game</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preload" href="https://cdn.jsdelivr.net/gh/Loycifer/Undertale-Web/resources/fonts/DTM-Mono.otf" as="font" type="font/otf" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <script src="https://websim-files.web.app/websim-socket.js"></script>
+</head>
+<body>
+    <div class="game-container">
+        <div class="hud">
+            <div class="score">Score: <span id="score">0</span></div>
+            <div class="health" data-karma="0">HP: <span id="health">100</span> KR: <span id="karma">0</span></div>
+        </div>
+        <div class="game-area">
+            <div id="player">
+                <img class="soul-image" src="SOUL2.png" alt="Soul">
+            </div>
+            <div id="gameOverScreen"></div>
+        </div>
+        <div class="controls">
+            <button id="start-btn">Start Game</button>
+            <div class="message" id="message">Dodge the bones to survive!<br>Press Z or Enter when near ITEMS to heal automatically.</div>
+        </div>
+    </div>
+    <img id="sans" src="Tenor-unscreen.gif" alt="Sans">
+    
+    <script src="game.js"></script>
+</body>
+</html>

@@ -33,7 +33,7 @@ body, html {
 
 .header {
     position: fixed;
-    top: 10px;
+    top: 5px;
     left: 0;
     width: 100%;
     height: 30vh; /* Altura base relativa al viewport */
@@ -57,10 +57,15 @@ body, html {
     min-height: 100%;
 }
 
+/* Ajustamos la posición del contenido principal */
 .content {
-    padding-top: 30vh; /* Igual a la altura del header */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0; /* Eliminamos el padding-top que podría estar causando problemas */
     position: absolute;
-    top: 50%;
+    top: 50%; /* Modificamos de 50% a 60% para bajar la posición */
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
@@ -72,11 +77,91 @@ body, html {
 
 .content h1 {
     font-size: clamp(2rem, 8vw, 4rem);
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     text-transform: uppercase;
     letter-spacing: clamp(2px, 1vw, 5px);
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
     animation: glow 2s infinite alternate;
+}
+
+/* Nuevo estilo para la caja de información */
+.info-box {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 4px;
+    margin-bottom: 10px;
+    box-shadow: 0 0 15px rgba(102, 51, 255, 0.5);
+}
+
+.info-box p {
+    font-size: 20px;
+    line-height: 1.5;
+    text-align: center;
+    color: #9a7bcc;
+    margin: 0;
+    padding: 0;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+    font-family: 'Arial', sans-serif;
+    margin-bottom: 15px;
+    font-weight: bold;
+
+}
+
+/* Estilos para el contenedor de Discord */
+.discord-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+}
+
+/* Estilo para el botón de Discord - versión mejorada y responsiva */
+.discord-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(45deg, #5865F2, #4752C4);
+    color: white;
+    border: 2px solid rgba(88, 101, 242, 0.5);
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin: 10px auto; /* Centrado horizontal con margen automático */
+    cursor: pointer;
+    width: min(300px, 90%); /* Ancho adaptativo: 300px o 90% del contenedor (el que sea menor) */
+    height: auto; /* Altura automática en lugar de fija */
+    min-height: 30px; /* Altura mínima */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: relative;
+    z-index: 5;
+    box-shadow: 0 0 10px rgba(88, 101, 242, 0.5), inset -20px -20px 40px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5), 0 0 10px rgba(255, 255, 255, 0.3);
+    font-family: 'Arial', sans-serif;
+    font-size: clamp(14px, 4vw, 18px); /* Tamaño de fuente adaptativo */
+}
+.discord-button:hover {     
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.discord-button:hover {
+    background-color: #4752C4;
+    box-shadow: 0 0 10px rgba(88, 101, 242, 0.8);
+    transform: translateY(-2px);
+}
+
+.discord-button svg {
+    fill: white;
 }
 
 @media (max-width: 768px) {
@@ -85,7 +170,29 @@ body, html {
         min-height: 80px;
     }
     .content {
-        padding-top: 25vh;
+        padding-top: 0;
+        top: 35%; /* Ajustado para móviles */
+    }
+    .info-box {
+        padding: 15px;
+    }
+    .info-box p {
+        font-size: 16px;
+    }
+    .discord-container {
+        flex-direction: column;
+    }
+    .discord-button {
+        padding: 8px 15px;
+        width: min(250px, 85%);
+    }
+}
+
+@media (max-width: 480px) {
+    .discord-button {
+        padding: 7px 12px;
+        width: min(220px, 80%);
+        gap: 6px;
     }
 }
 
@@ -94,8 +201,10 @@ body, html {
         height: 20vh;
     }
     .content {
-        padding-top: 0vh;
+        padding-top: 0;
+        top: 35%; /* Ajustado para orientación vertical */
     }
+    
 }
 
 .planet {
@@ -259,133 +368,4 @@ body, html {
     display: flex;
     align-items: center;
     gap: 5px;
-}
-
-/* Add these styles to your styles.css file */
-
-.beta-registration {
-    margin-top: 20px;
-    animation: fadeIn 1.5s ease-in-out forwards;
-    opacity: 0;
-    animation-delay: 0.5s;
-}
-
-.beta-text {
-    color: white;
-    font-size: clamp(1rem, 3vw, 1.5rem);
-    margin-bottom: 15px;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-}
-
-.beta-button {
-    display: inline-block;
-    padding: 12px 25px;
-    background: linear-gradient(45deg, #ff00cc, #3333ff);
-    color: white;
-    border-radius: 30px;
-    font-weight: bold;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 15px rgba(255, 0, 204, 0.5);
-    letter-spacing: 1px;
-}
-
-.beta-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255, 0, 204, 0.8);
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Styles for rickroll page */
-.prank-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    padding: 20px;
-    text-align: center;
-    width: 100%;
-    max-width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 10;
-}
-
-.video-container {
-    width: 90%;
-    max-width: 1000px;
-    margin: 0 auto 30px;
-    position: relative;
-    display: flex;
-    justify-content: center;
-}
-
-.video-wrapper {
-    position: relative;
-    width: 100%;
-    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-    height: 0;
-    overflow: hidden;
-    box-shadow: 0 0 30px rgba(255, 0, 204, 0.3);
-    border-radius: 8px;
-}
-
-.video-wrapper iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-}
-
-.prank-message {
-    color: white;
-    font-size: clamp(1.5rem, 5vw, 2.5rem);
-    margin: 30px 0;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    animation: glow 2s infinite alternate;
-}
-
-.return-button {
-    padding: 12px 25px;
-    background: linear-gradient(45deg, #ff00cc, #3333ff);
-    color: white;
-    border-radius: 30px;
-    font-weight: bold;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 15px rgba(255, 0, 204, 0.5);
-}
-
-.return-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255, 0, 204, 0.8);
-}
-
-/* Media queries for responsive video size */
-@media (min-width: 1200px) {
-    .video-container {
-        width: 70%;
-    }
-}
-
-@media (max-width: 768px) {
-    .video-container {
-        width: 95%;
-    }
 }

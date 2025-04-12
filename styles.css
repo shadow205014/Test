@@ -65,7 +65,7 @@ body, html {
     justify-content: center;
     padding-top: 0; /* Eliminamos el padding-top que podría estar causando problemas */
     position: absolute;
-    top: 50%; /* Modificamos de 50% a 60% para bajar la posición */
+    top: 55%; /* Modificamos de 50% a 60% para bajar la posición */
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
@@ -80,7 +80,7 @@ body, html {
     margin-bottom: 1.5rem;
     text-transform: uppercase;
     letter-spacing: clamp(2px, 1vw, 5px);
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 10px rgba(255, 248, 231, 0.5), 0 0 20px rgba(255, 248, 231, 0.3);
     animation: glow 2s infinite alternate;
 }
 
@@ -96,7 +96,7 @@ body, html {
 
 .info-box p {
     font-size: 20px;
-    line-height: 1.5;
+    line-height: 1;
     text-align: center;
     color: #9a7bcc;
     margin: 0;

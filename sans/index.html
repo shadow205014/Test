@@ -1,0 +1,1245 @@
+            <div id="sans">
+                <!-- Usar el sprite de Sans que me proporcionaste -->
+                <img src="Tenor-unscreen.gif" alt="Sans" id="sansImage">
+            </div>
+            <div id="player">
+                <!-- Usar el sprite del corazón que me proporcionaste -->
+                <img src="SOUL2.png" alt="Soul" id="playerImage">
+            </div>
+            
+            <div id="gameOverScreen">
+                <div class="game-over-content">* You died.</div>
+                <div class="final-score">Puntuación final: <span id="finalScore">0</span></div>
+                <div class="game-over-quote">"nah, i'm rootin' for ya, kid."</div>
+                <button id="restartBtn" onclick="resetGame()" style="margin-top: 15px; padding: 8px 16px; background: #333; color: white; border: 2px solid #666; cursor: pointer; font-family: inherit; font-size: 10px;">* Continue</button>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="start-btn" onclick="startGame()">Iniciar Juego</button>
+            <div class="message" id="message">
+                🎮 WASD/Flechas: Moverse | 🔵 Azul: No te muevas<br>
+                🟡 Recoge ítems para curarte | ⚡ Esquiva los ataques de Sans
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio para música -->
+    <audio id="bgMusic" loop>
+        <source src="1-13 Megalovania.mp3" type="audio/mpeg">
+        <source src="megalovania.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Estado del juego
+        let gameState = {
+            isRunning: false,
+            score: 0,
+            health: 20,
+            maxHealth: 20,
+            karma: 0,
+            player: {
+                x: 312,
+                y: 192,
+                size: 16,
+                speed: 3
+            },
+            keys: {},
+            attacks: [],
+            items: [],
+            difficulty: 1,
+            patternTimer: 0,
+            invulnerable: false,
+            invulnerabilityTimer: 0,
+            musicEnabled: true,
+            lastPlayerX: 312,
+            lastPlayerY: 192,
+            totalPatterns: 0
+        };
+
+        // Elementos DOM con verificación de existencia
+        const gameArea = document.querySelector('.game-area');
+        const player = document.getElementById('player');
+        const sans = document.getElementById('sans');
+        const bgMusic = document.getElementById('bgMusic');
+        
+        const ui = {
+            score: document.getElementById('score'),
+            health: document.getElementById('health'),
+            karma: document.getElementById('karma'),
+            difficulty: document.getElementById('difficulty'),
+            gameOver: document.getElementById('gameOverScreen'),
+            finalScore: document.getElementById('finalScore'),
+            message: document.getElementById('message')
+        };
+
+        // Verificar que todos los elementos existen
+        function checkElements() {
+            const requiredElements = [gameArea, player, sans];
+            const requiredUI = Object.values(ui);
+            
+            for (let element of requiredElements) {
+                if (!element) {
+                    console.error('Elemento requerido no encontrado:', element);
+                    return false;
+                }
+            }
+            
+            for (let element of requiredUI) {
+                if (!element) {
+                    console.error('Elemento UI no encontrado:', element);
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        // Arrays de sprites disponibles
+        const boneSprites = {
+            horizontal: ['4t8yv2.webp', '/4t8yv2.webp'],
+            vertical: ['4t8yv2.webp', '/4t8yv2.webp'],
+            blue: ['blue-bone-removebg-preview.png', '/blue-bone-removebg-preview.png']
+        };
+
+        const itemSprites = ['item.png', '/item.png'];
+
+        // Frases de Sans
+        const sansQuotes = [
+            "here we go.",
+            "let's just get to the point.",
+            "nope.",
+            "didn't work.",
+            "welp, here we are.",
+            "heh.",
+            "you're gonna have a bad time.",
+            "heya. you've been busy, huh?",
+            "so, i've got a question for ya.",
+            "do you wanna have a bad time?"
+        ];
+
+        // Crear sprites de huesos usando imágenes directas
+        function createBoneSprite(isBlue = false) {
+            const img = document.createElement('img');
+            if (isBlue) {
+                img.src = boneSprites.blue[0];
+                img.onerror = () => { img.src = boneSprites.blue[1]; };
+            } else {
+                img.src = boneSprites.horizontal[0];
+                img.onerror = () => { img.src = boneSprites.horizontal[1]; };
+            }
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.imageRendering = 'pixelated';
+            return img;
+        }
+
+        // Crear sprite de ítem usando imagen directa
+        function createItemSprite() {
+            const img = document.createElement('img');
+            img.src = itemSprites[0];
+            img.onerror = () => { img.src = itemSprites[1]; };
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.imageRendering = 'pixelated';
+            return img;
+        }
+
+        // Crear Gaster Blaster usando la imagen del cráneo (reutilizando sans)
+        function createGasterBlasterSprite() {
+            const img = document.createElement('img');
+            img.src = 'Tenor-unscreen.gif';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.imageRendering = 'pixelated';
+            img.style.filter = 'hue-rotate(180deg) brightness(0.8)';
+            return img;
+        }
+
+        // Controles
+        document.addEventListener('keydown', (e) => {
+            gameState.keys[e.key.toLowerCase()] = true;
+            
+            // Recoger ítems con Z o Enter
+            if ((e.key.toLowerCase() === 'z' || e.key === 'Enter') && gameState.isRunning) {
+                checkItemCollection();
+            }
+            
+            e.preventDefault();
+        });
+
+        document.addEventListener('keyup', (e) => {
+            gameState.keys[e.key.toLowerCase()] = false;
+            e.preventDefault();
+        });
+
+        function movePlayer() {
+            if (!gameState.isRunning || !player) return;
+
+            gameState.lastPlayerX = gameState.player.x;
+            gameState.lastPlayerY = gameState.player.y;
+
+            let newX = gameState.player.x;
+            let newY = gameState.player.y;
+            const speed = gameState.player.speed;
+
+            if (gameState.keys['a'] || gameState.keys['arrowleft']) newX -= speed;
+            if (gameState.keys['d'] || gameState.keys['arrowright']) newX += speed;
+            if (gameState.keys['w'] || gameState.keys['arrowup']) newY -= speed;
+            if (gameState.keys['s'] || gameState.keys['arrowdown']) newY += speed;
+
+            // Límites
+            newX = Math.max(0, Math.min(624, newX));
+            newY = Math.max(0, Math.min(384, newY));
+
+            gameState.player.x = newX;
+            gameState.player.y = newY;
+
+            player.style.left = newX + 'px';
+            player.style.top = newY + 'px';
+        }
+
+        function spawnBone(direction, speed = 3, isBlue = false) {
+            if (!gameArea) return;
+            
+            const bone = document.createElement('div');
+            bone.className = isBlue ? 'bone blue-bone' : 'bone';
+            
+            // Añadir sprite de hueso
+            const boneImage = createBoneSprite(isBlue);
+            bone.appendChild(boneImage);
+            
+            let width, height, startX, startY, vx = 0, vy = 0;
+            
+            // Tamaños más realistas basados en los sprites originales
+            if (direction === 'up' || direction === 'down') {
+                width = 20; height = 60;
+                startX = Math.random() * (640 - width);
+                if (direction === 'up') {
+                    startY = 400;
+                    vy = -speed;
+                } else {
+                    startY = -height;
+                    vy = speed;
+                }
+                boneImage.style.transform = 'rotate(90deg)';
+            } else {
+                width = 60; height = 20;
+                startY = Math.random() * (400 - height);
+                if (direction === 'left') {
+                    startX = 640;
+                    vx = -speed;
+                } else {
+                    startX = -width;
+                    vx = speed;
+                }
+                boneImage.style.transform = 'rotate(0deg)';
+            }
+
+            bone.style.left = startX + 'px';
+            bone.style.top = startY + 'px';
+            bone.style.width = width + 'px';
+            bone.style.height = height + 'px';
+            gameArea.appendChild(bone);
+
+            gameState.attacks.push({
+                element: bone,
+                x: startX,
+                y: startY,
+                width: width,
+                height: height,
+                vx: vx,
+                vy: vy,
+                type: isBlue ? 'blue-bone' : 'bone'
+            });
+        }
+
+        function spawnGasterBlaster(side) {
+            const blaster = document.createElement('div');
+            blaster.className = 'gaster-blaster';
+            
+            // Usar sprite de Gaster Blaster
+            const blasterImage = createGasterBlasterSprite();
+            blaster.appendChild(blasterImage);
+            
+            let x, y, laserX, laserY, laserWidth, laserHeight;
+            
+            switch(side) {
+                case 0: // top
+                    x = Math.random() * 520;
+                    y = -100;
+                    laserX = x + 60;
+                    laserY = 100;
+                    laserWidth = 30;
+                    laserHeight = 300;
+                    blasterImage.style.transform = 'rotate(90deg)';
+                    break;
+                case 1: // right
+                    x = 640;
+                    y = Math.random() * 320;
+                    laserX = 0;
+                    laserY = y + 25;
+                    laserWidth = x;
+                    laserHeight = 30;
+                    blasterImage.style.transform = 'rotate(180deg)';
+                    break;
+                case 2: // bottom
+                    x = Math.random() * 520;
+                    y = 400;
+                    laserX = x + 60;
+                    laserY = 0;
+                    laserWidth = 30;
+                    laserHeight = y - 100;
+                    blasterImage.style.transform = 'rotate(-90deg)';
+                    break;
+                case 3: // left
+                    x = -120;
+                    y = Math.random() * 320;
+                    laserX = 120;
+                    laserY = y + 25;
+                    laserWidth = 520;
+                    laserHeight = 30;
+                    blasterImage.style.transform = 'rotate(0deg)';
+                    break;
+            }
+            
+            blaster.style.left = x + 'px';
+            blaster.style.top = y + 'px';
+            blaster.style.width = '120px';
+            blaster.style.height = '80px';
+            gameArea.appendChild(blaster);
+
+            // Advertencia
+            const warning = document.createElement('div');
+            warning.className = 'warning';
+            warning.textContent = '⚠️';
+            warning.style.left = (laserX + laserWidth/2 - 12) + 'px';
+            warning.style.top = (laserY + laserHeight/2 - 12) + 'px';
+            gameArea.appendChild(warning);
+
+            // Animación de Sans
+            sans.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                sans.style.transform = 'scale(1)';
+            }, 300);
+
+            setTimeout(() => {
+                warning.remove();
+                const laser = document.createElement('div');
+                laser.className = 'laser';
+                laser.style.left = laserX + 'px';
+                laser.style.top = laserY + 'px';
+                laser.style.width = laserWidth + 'px';
+                laser.style.height = laserHeight + 'px';
+                gameArea.appendChild(laser);
+
+                gameState.attacks.push({
+                    element: laser,
+                    x: laserX,
+                    y: laserY,
+                    width: laserWidth,
+                    height: laserHeight,
+                    vx: 0,
+                    vy: 0,
+                    type: 'laser',
+                    lifetime: 1200
+                });
+
+                setTimeout(() => {
+                    blaster.remove();
+                }, 1200);
+            }, 2500); // Advertencia más larga para ser más fácil
+        }
+
+        function spawnItem() {
+            const item = document.createElement('div');
+            item.className = 'item-button';
+            
+            // Usar sprite de ítem
+            const itemImage = createItemSprite();
+            item.appendChild(itemImage);
+            
+            const x = Math.random() * 580;
+            const y = Math.random() * 350;
+            
+            item.style.left = x + 'px';
+            item.style.top = y + 'px';
+            item.style.width = '40px';
+            item.style.height = '35px';
+            gameArea.appendChild(item);
+
+            gameState.items.push({
+                element: item,
+                x: x,
+                y: y,
+                width: 40,
+                height: 35,
+                lifetime: 0
+            });
+        }
+
+        function checkItemCollection() {
+            const playerRect = {
+                x: gameState.player.x,
+                y: gameState.player.y,
+                width: gameState.player.size,
+                height: gameState.player.size
+            };
+
+            for (let i = gameState.items.length - 1; i >= 0; i--) {
+                const item = gameState.items[i];
+                const itemRect = {
+                    x: item.x,
+                    y: item.y,
+                    width: item.width,
+                    height: item.height
+                };
+
+                // Detección de proximidad más generosa
+                const distance = Math.sqrt(
+                    Math.pow(playerRect.x + playerRect.width/2 - (itemRect.x + itemRect.width/2), 2) +
+                    Math.pow(playerRect.y + playerRect.height/2 - (itemRect.y + itemRect.height/2), 2)
+                );
+
+                if (distance < 30) { // Distancia generosa para recoger ítems
+                    // Recoger ítem
+                    const healAmount = Math.floor(Math.random() * 8) + 5; // 5-12 HP
+                    gameState.health = Math.min(gameState.maxHealth, gameState.health + healAmount);
+                    
+                    if (gameState.karma > 0) {
+                        const karmaReduction = Math.min(gameState.karma, Math.floor(healAmount / 2));
+                        gameState.karma -= karmaReduction;
+                    }
+
+                    // Mostrar curación
+                    showNumber(gameState.player.x, gameState.player.y, `+${healAmount}`, '#44ff44');
+                    
+                    // Remover ítem
+                    item.element.remove();
+                    gameState.items.splice(i, 1);
+                    
+                    ui.message.innerHTML = `* Recuperaste ${healAmount} HP!`;
+                    
+                    // Sonido de curación (usando audio web si disponible)
+                    playHealSound();
+                    break;
+                }
+            }
+        }
+
+        function spawnRandomPattern() {
+            const patterns = [
+                () => {
+                    // Huesos básicos (más fácil)
+                    for (let i = 0; i < 1 + gameState.difficulty; i++) {
+                        setTimeout(() => {
+                            const directions = ['up', 'down', 'left', 'right'];
+                            const isBlue = Math.random() < 0.15; // 15% chance de hueso azul
+                            spawnBone(directions[Math.floor(Math.random() * directions.length)], 2 + gameState.difficulty * 0.3, isBlue);
+                        }, i * 600); // Más tiempo entre huesos
+                    }
+                },
+                () => {
+                    // Gaster Blaster único
+                    spawnGasterBlaster(Math.floor(Math.random() * 4));
+                },
+                () => {
+                    // Huesos dobles más lentos
+                    spawnBone('up', 2);
+                    setTimeout(() => spawnBone('down', 2), 800);
+                },
+                () => {
+                    // Lluvia de huesos espaciada
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => {
+                            spawnBone(Math.random() < 0.5 ? 'up' : 'down', 2.5);
+                        }, i * 500);
+                    }
+                }
+            ];
+
+            // Seleccionar patrón basado en dificultad pero más conservador
+            const maxPatterns = Math.min(patterns.length, Math.floor(gameState.difficulty / 2) + 2);
+            const pattern = patterns[Math.floor(Math.random() * maxPatterns)];
+            pattern();
+        }
+
+        function updateAttacks() {
+            gameState.attacks = gameState.attacks.filter(attack => {
+                attack.x += attack.vx;
+                attack.y += attack.vy;
+
+                attack.element.style.left = attack.x + 'px';
+                attack.element.style.top = attack.y + 'px';
+
+                // Verificar colisión
+                if (!gameState.invulnerable && checkCollision(attack)) {
+                    if (attack.type === 'blue-bone') {
+                        // Hueso azul: solo daña si el jugador se mueve (más tolerante)
+                        const movementThreshold = 5;
+                        if (Math.abs(gameState.player.x - gameState.lastPlayerX) > movementThreshold || 
+                            Math.abs(gameState.player.y - gameState.lastPlayerY) > movementThreshold) {
+                            takeDamage(1); // Reducido de 2 a 1
+                        }
+                    } else {
+                        takeDamage(1);
+                    }
+                }
+
+                // Eliminar si está fuera de pantalla
+                if (attack.x < -200 || attack.x > 840 || attack.y < -200 || attack.y > 600) {
+                    attack.element.remove();
+                    return false;
+                }
+
+                // Eliminar lasers después de su tiempo
+                if (attack.lifetime) {
+                    attack.lifetime -= 16;
+                    if (attack.lifetime <= 0) {
+                        attack.element.remove();
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+        }
+
+        function updateItems() {
+            gameState.items = gameState.items.filter(item => {
+                item.lifetime += 16;
+
+                // Eliminar ítem después de 12 segundos (más tiempo)
+                if (item.lifetime > 12000) {
+                    item.element.remove();
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        function checkCollision(attack) {
+            const playerLeft = gameState.player.x + 3;
+            const playerRight = gameState.player.x + gameState.player.size - 3;
+            const playerTop = gameState.player.y + 3;
+            const playerBottom = gameState.player.y + gameState.player.size - 3;
+
+            const attackLeft = attack.x;
+            const attackRight = attack.x + attack.width;
+            const attackTop = attack.y;
+            const attackBottom = attack.y + attack.height;
+
+            return playerRight > attackLeft && 
+                   playerLeft < attackRight && 
+                   playerBottom > attackTop && 
+                   playerTop < attackBottom;
+        }
+
+        function takeDamage(damage) {
+            gameState.health -= damage;
+            gameState.karma += Math.floor(damage / 2); // Menos karma
+            gameState.invulnerable = true;
+            gameState.invulnerabilityTimer = 1500; // Más tiempo de invulnerabilidad
+            
+            // Efectos visuales
+            player.classList.add('flashing');
+            gameArea.classList.add('shake');
+            
+            // Mostrar daño
+            showNumber(gameState.player.x, gameState.player.y, `-${damage}`, '#ff4444');
+            
+            setTimeout(() => {
+                player.classList.remove('flashing');
+                gameArea.classList.remove('shake');
+            }, 500);
+
+            // Mensaje de Sans ocasional
+            if (Math.random() < 0.25) {
+                const quote = sansQuotes[Math.floor(Math.random() * sansQuotes.length)];
+                ui.message.innerHTML = `* ${quote}`;
+            }
+
+            if (gameState.health <= 0) {
+                gameOver();
+            }
+        }
+
+        function showNumber(x, y, text, color) {
+            const numberEl = document.createElement('div');
+            numberEl.className = color === '#44ff44' ? 'heal-number' : 'damage-number';
+            numberEl.textContent = text;
+            numberEl.style.left = (x + 8) + 'px';
+            numberEl.style.top = (y - 5) + 'px';
+            numberEl.style.color = color;
+            gameArea.appendChild(numberEl);
+            
+            setTimeout(() => {
+                if (numberEl.parentNode) {
+                    numberEl.remove();
+                }
+            }, 1000);
+        }
+
+        function updateUI() {
+            if (!checkElements()) return;
+            
+            if (ui.score) ui.score.textContent = gameState.score;
+            if (ui.health) ui.health.textContent = gameState.health;
+            if (ui.karma) ui.karma.textContent = gameState.karma;
+            if (ui.difficulty) ui.difficulty.textContent = gameState.difficulty;
+        }
+
+        function toggleMusic() {
+            gameState.musicEnabled = !gameState.musicEnabled;
+            const musicToggle = document.getElementById('musicToggle');
+            
+            if (gameState.musicEnabled) {
+                if (bgMusic) {
+                    bgMusic.play().catch(() => {
+                        console.log('No se pudo reproducir música, creando música sintética...');
+                        createSyntheticMusic();
+                    });
+                }
+                if (musicToggle) musicToggle.textContent = '♪ ON';
+            } else {
+                if (bgMusic) bgMusic.pause();
+                if (musicToggle) musicToggle.textContent = '♪ OFF';
+            }
+        }
+
+        function playHealSound() {
+            // Crear sonido de curación simple
+            if (window.AudioContext || window.webkitAudioContext) {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+                oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime + 0.3);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.3);
+            }
+        }
+
+        function startGame() {
+            if (gameState.isRunning || !checkElements()) return;
+            
+            gameState.isRunning = true;
+            gameState.score = 0;
+            gameState.health = 20;
+            gameState.karma = 0;
+            gameState.difficulty = 1;
+            gameState.patternTimer = 0;
+            gameState.invulnerable = false;
+            gameState.totalPatterns = 0;
+            
+            // Resetear posición del jugador
+            gameState.player.x = 312;
+            gameState.player.y = 192;
+            if (player) {
+                player.style.left = '312px';
+                player.style.top = '192px';
+                player.classList.remove('flashing');
+            }
+            
+            if (ui.gameOver) ui.gameOver.style.display = 'none';
+            if (ui.message) ui.message.innerHTML = "* don't get hit by the bones!";
+            
+            // Limpiar ataques e ítems existentes
+            gameState.attacks.forEach(attack => {
+                if (attack.element && attack.element.parentNode) {
+                    attack.element.remove();
+                }
+            });
+            gameState.attacks = [];
+            
+            gameState.items.forEach(item => {
+                if (item.element && item.element.parentNode) {
+                    item.element.remove();
+                }
+            });
+            gameState.items = [];
+            
+            // Limpiar elementos restantes del DOM
+            if (gameArea) {
+                const cleanup = gameArea.querySelectorAll('.bone, .gaster-blaster, .laser, .warning, .item-button, .damage-number, .heal-number');
+                cleanup.forEach(el => {
+                    if (el && el.parentNode) {
+                        el.remove();
+                    }
+                });
+            }
+            
+            // Iniciar música
+            if (gameState.musicEnabled && bgMusic) {
+                bgMusic.volume = 0.3;
+                bgMusic.play().catch(() => {
+                    console.log('No se pudo reproducir música, creando música sintética...');
+                    createSyntheticMusic();
+                });
+            }
+            
+            // Animación de Sans
+            if (sans) sans.classList.add('flashing');
+            
+            gameLoop();
+        }
+
+        function gameOver() {
+            gameState.isRunning = false;
+            if (ui.finalScore) ui.finalScore.textContent = gameState.score;
+            if (ui.gameOver) ui.gameOver.style.display = 'flex';
+            
+            if (gameState.musicEnabled && bgMusic) {
+                bgMusic.pause();
+            }
+            
+            // Limpiar todo
+            gameState.attacks.forEach(attack => {
+                if (attack.element && attack.element.parentNode) {
+                    attack.element.remove();
+                }
+            });
+            gameState.attacks = [];
+            
+            gameState.items.forEach(item => {
+                if (item.element && item.element.parentNode) {
+                    item.element.remove();
+                }
+            });
+            gameState.items = [];
+            
+            // Limpiar elementos restantes
+            if (gameArea) {
+                const cleanup = gameArea.querySelectorAll('.bone, .gaster-blaster, .laser, .warning, .item-button, .damage-number, .heal-number');
+                cleanup.forEach(el => {
+                    if (el && el.parentNode) {
+                        el.remove();
+                    }
+                });
+            }
+            
+            if (sans) sans.classList.remove('flashing');
+            
+            // Mensaje final de Sans
+            setTimeout(() => {
+                const finalQuote = sansQuotes[Math.floor(Math.random() * sansQuotes.length)];
+                if (ui.message) ui.message.innerHTML = `* ${finalQuote}`;
+            }, 500);
+        }
+
+        function resetGame() {
+            // Limpiar elementos restantes
+            if (gameArea) {
+                const cleanup = gameArea.querySelectorAll('.bone, .gaster-blaster, .laser, .warning, .item-button, .damage-number, .heal-number');
+                cleanup.forEach(el => {
+                    if (el && el.parentNode) {
+                        el.remove();
+                    }
+                });
+            }
+            
+            if (ui.gameOver) ui.gameOver.style.display = 'none';
+            if (sans) sans.classList.remove('flashing');
+            
+            // Reset estado
+            gameState.isRunning = false;
+            gameState.score = 0;
+            gameState.health = 20;
+            gameState.karma = 0;
+            gameState.difficulty = 1;
+            gameState.attacks = [];
+            gameState.items = [];
+            
+            // Resetear posición del jugador
+            gameState.player.x = 312;
+            gameState.player.y = 192;
+            if (player) {
+                player.style.left = '312px';
+                player.style.top = '192px';
+            }
+            
+            updateUI();
+            if (ui.message) {
+                ui.message.innerHTML = "🎮 WASD/Flechas: Moverse | 🔵 Azul: No te muevas<br>🟡 Recoge ítems para curarte | ⚡ Esquiva los ataques de Sans";
+            }
+        }
+
+        function gameLoop() {
+            if (!gameState.isRunning) return;
+
+            // Actualizar puntuación y dificultad más gradualmente
+            gameState.score += 1;
+            gameState.difficulty = Math.min(5, Math.floor(gameState.score / 2400) + 1); // Más lento
+
+            // Aplicar daño por karma (más lento y menos severo)
+            if (gameState.karma > 0 && gameState.score % 240 === 0) { // Cada 4 segundos en lugar de 3
+                gameState.karma = Math.max(0, gameState.karma - 1);
+                if (gameState.health > 1) {
+                    gameState.health = Math.max(1, gameState.health - 1);
+                    showNumber(gameState.player.x, gameState.player.y, '-1', '#ff00ff');
+                }
+                if (gameState.health <= 0) {
+                    gameOver();
+                    return;
+                }
+            }
+
+            // Manejar invulnerabilidad
+            if (gameState.invulnerable) {
+                gameState.invulnerabilityTimer -= 16;
+                if (gameState.invulnerabilityTimer <= 0) {
+                    gameState.invulnerable = false;
+                }
+            }
+
+            // Spawnar patrones (más espaciado)
+            gameState.patternTimer += 16;
+            const patternCooldown = Math.max(2000, 4000 - (gameState.difficulty * 300)); // Más tiempo
+            
+            if (gameState.patternTimer >= patternCooldown) {
+                gameState.patternTimer = 0;
+                gameState.totalPatterns++;
+                
+                // Limpiar algunos ataques antiguos
+                if (gameState.totalPatterns > 1) {
+                    const oldAttacks = gameArea.querySelectorAll('.bone:not(.blue-bone)');
+                    const toRemove = Math.min(oldAttacks.length, Math.floor(oldAttacks.length * 0.4));
+                    for (let i = 0; i < toRemove; i++) {
+                        if (oldAttacks[i] && oldAttacks[i].parentNode) {
+                            oldAttacks[i].style.transition = 'opacity 0.5s';
+                            oldAttacks[i].style.opacity = '0';
+                            setTimeout(() => {
+                                if (oldAttacks[i] && oldAttacks[i].parentNode) {
+                                    oldAttacks[i].remove();
+                                }
+                            }, 500);
+                        }
+                    }
+                }
+                
+                spawnRandomPattern();
+                
+                // Chance de ítem más frecuente
+                if (Math.random() < 0.25) { // 25% chance
+                    setTimeout(() => spawnItem(), Math.random() * 1500);
+                }
+            }
+
+            movePlayer();
+            updateAttacks();
+            updateItems();
+            updateUI();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Crear música sintética como fallback
+        function createSyntheticMusic() {
+            if (!window.AudioContext && !window.webkitAudioContext) return;
+            
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            
+            oscillator.start();
+            
+            // Melodía tipo Megalovania
+            const notes = [220, 220, 440, 330, 311, 262, 220, 196, 220, 262, 294, 220];
+            let noteIndex = 0;
+            
+            const musicInterval = setInterval(() => {
+                if (gameState.musicEnabled && gameState.isRunning) {
+                    oscillator.frequency.setValueAtTime(notes[noteIndex], audioContext.currentTime);
+                    noteIndex = (noteIndex + 1) % notes.length;
+                } else if (!gameState.isRunning) {
+                    clearInterval(musicInterval);
+                    oscillator.stop();
+                }
+            }, 250);
+        }
+
+        // Inicializar al cargar la página
+        window.addEventListener('load', () => {
+            updateUI();
+            
+            // Intentar cargar música al hacer primer clic
+            document.addEventListener('click', function musicInit() {
+                if (gameState.musicEnabled) {
+                    bgMusic.play().catch(() => {
+                        console.log('Creando música sintética...');
+                        createSyntheticMusic();
+                    });
+                }
+                document.removeEventListener('click', musicInit);
+            }, { once: true });
+        });
+
+        // Inicializar
+        updateUI();
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sans Dodging Game - Sprites Originales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', monospace;
+            background: linear-gradient(45deg, #000, #111);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .game-container {
+            width: 640px;
+            height: 520px;
+            background-color: #000;
+            border: 4px solid #fff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #000;
+            font-size: 12px;
+            border-bottom: 2px solid #fff;
+            height: 60px;
+        }
+
+        .hud-left, .hud-right {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .music-btn {
+            background: #333;
+            color: white;
+            border: 2px solid #666;
+            padding: 5px 10px;
+            font-family: inherit;
+            font-size: 8px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .music-btn:hover {
+            background: #555;
+        }
+
+        .game-area {
+            position: relative;
+            height: 400px;
+            background-color: #000;
+            overflow: hidden;
+            border-bottom: 2px solid #fff;
+        }
+
+        /* Sans usando sprite directo */
+        #sans {
+            position: absolute;
+            top: -150px;
+            right: 50px;
+            width: 128px;
+            height: 128px;
+            z-index: 3;
+            transition: all 0.3s ease;
+            image-rendering: pixelated;
+        }
+
+        #sans img {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+        }
+
+        /* Jugador usando sprite directo */
+        #player {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 312px;
+            top: 192px;
+            z-index: 100;
+            transition: all 0.08s;
+        }
+
+        #player img {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+        }
+
+        /* Huesos usando sprites directos */
+        .bone {
+            position: absolute;
+            z-index: 50;
+            image-rendering: pixelated;
+        }
+
+        .bone img {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+        }
+
+        .blue-bone {
+            filter: hue-rotate(240deg) brightness(1.3) saturate(1.5);
+            box-shadow: 0 0 10px rgba(0, 100, 255, 0.8);
+        }
+
+        /* Gaster Blasters */
+        .gaster-blaster {
+            position: absolute;
+            z-index: 40;
+            image-rendering: pixelated;
+        }
+
+        .gaster-blaster img {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+        }
+
+        .laser {
+            background: 
+                linear-gradient(90deg, 
+                    transparent 0%,
+                    rgba(0, 255, 255, 0.3) 15%,
+                    #00ffff 35%,
+                    #ffffff 50%,
+                    #00ffff 65%,
+                    rgba(0, 255, 255, 0.3) 85%,
+                    transparent 100%
+                );
+            position: absolute;
+            z-index: 45;
+            box-shadow: 0 0 30px #00ffff;
+            animation: laserPulse 0.15s infinite;
+        }
+
+        @keyframes laserPulse {
+            0%, 100% { opacity: 0.9; filter: brightness(1); }
+            50% { opacity: 1; filter: brightness(1.3); }
+        }
+
+        .warning {
+            color: #ffff00;
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 60;
+            animation: warningBlink 0.3s infinite;
+            text-shadow: 0 0 15px #ffff00;
+        }
+
+        @keyframes warningBlink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(1.2); }
+        }
+
+        .item-button {
+            position: absolute;
+            z-index: 55;
+            animation: itemGlow 2s infinite;
+            image-rendering: pixelated;
+        }
+
+        .item-button img {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+        }
+
+        @keyframes itemGlow {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 5px #ffd700); }
+            50% { filter: brightness(1.3) drop-shadow(0 0 15px #ffd700); }
+        }
+
+        .controls {
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #000;
+            height: 60px;
+        }
+
+        #start-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #333, #555);
+            color: white;
+            border: 2px solid #666;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 10px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        #start-btn:hover {
+            background: linear-gradient(135deg, #555, #777);
+            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .message {
+            font-size: 10px;
+            color: #fff;
+            max-width: 400px;
+            line-height: 1.4;
+        }
+
+        #gameOverScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .game-over-content {
+            color: #ff4444;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 12px;
+            margin: 10px 0;
+        }
+
+        .game-over-quote {
+            font-size: 10px;
+            opacity: 0.8;
+            margin: 10px 0;
+        }
+
+        .damage-number {
+            position: absolute;
+            color: #ff4444;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 120;
+            animation: damageFloat 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes damageFloat {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-40px); }
+        }
+
+        .heal-number {
+            position: absolute;
+            color: #44ff44;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 120;
+            animation: healFloat 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes healFloat {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-40px); }
+        }
+
+        .shake {
+            animation: battleShake 0.3s ease-in-out;
+        }
+
+        @keyframes battleShake {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-3px, -2px); }
+            75% { transform: translate(3px, 2px); }
+        }
+
+        .flashing {
+            animation: flash 0.5s infinite;
+        }
+
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .difficulty-indicator {
+            font-size: 8px;
+            opacity: 0.8;
+        }
+
+        .karma-indicator {
+            color: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="hud">
+            <div class="hud-left">
+                <div>Puntuación: <span id="score">0</span></div>
+                <div>HP: <span id="health">20</span> <span class="karma-indicator">KR: <span id="karma">0</span></span></div>
+            </div>
+            <div class="hud-right">
+                <div class="music-controls">
+                    <button class="music-btn" id="musicToggle" onclick="toggleMusic()">♪ ON</button>
+                </div>
+                <div class="difficulty-indicator">Dificultad: <span id="difficulty">1</span></div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div id="sans">
+                <!-- Sans sprite directo -->
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAdgAAAHYBTnsmCAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAANCSURBVHic7ZtNiE1RGMafRxiJhQkLZWGhLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCw

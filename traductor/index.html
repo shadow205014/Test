@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎤 Traductor de Voz Universal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .display-area {
+            padding: 40px;
+            min-height: 300px;
+            background: #000;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            --border-color: #000000;
+        }
+
+        #translatedText {
+            font-size: 3em;
+            font-weight: bold;
+            line-height: 1.4;
+            word-wrap: break-word;
+            max-width: 100%;
+            padding: 20px;
+            transition: all 0.3s ease;
+            text-shadow: none;
+        }
+
+        #translatedText.border-thin {
+            text-shadow: 
+                -1px -1px 0 var(--border-color),
+                1px -1px 0 var(--border-color),
+                -1px 1px 0 var(--border-color),
+                1px 1px 0 var(--border-color);
+        }
+
+        #translatedText.border-medium {
+            text-shadow: 
+                -2px -2px 0 var(--border-color),
+                2px -2px 0 var(--border-color),
+                -2px 2px 0 var(--border-color),
+                2px 2px 0 var(--border-color),
+                -2px 0 0 var(--border-color),
+                2px 0 0 var(--border-color),
+                0 -2px 0 var(--border-color),
+                0 2px 0 var(--border-color);
+        }
+
+        #translatedText.border-thick {
+            text-shadow: 
+                -3px -3px 0 var(--border-color),
+                3px -3px 0 var(--border-color),
+                -3px 3px 0 var(--border-color),
+                3px 3px 0 var(--border-color),
+                -3px 0 0 var(--border-color),
+                3px 0 0 var(--border-color),
+                0 -3px 0 var(--border-color),
+                0 3px 0 var(--border-color),
+                -2px -2px 0 var(--border-color),
+                2px -2px 0 var(--border-color),
+                -2px 2px 0 var(--border-color),
+                2px 2px 0 var(--border-color);
+        }
+
+        #translatedText.border-glow {
+            text-shadow: 
+                0 0 5px var(--border-color),
+                0 0 10px var(--border-color),
+                0 0 15px var(--border-color),
+                0 0 20px var(--border-color);
+        }
+
+        #translatedText.speaking {
+            /* Animación removida para mejor rendimiento */
+        }
+
+        .status {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1em;
+            backdrop-filter: blur(10px);
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        select, input {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover, input:hover {
+            border-color: #667eea;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1.3em;
+            padding: 15px 40px;
+        }
+
+        .btn-stop {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 40px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        .alert {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 30px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .alert.info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            color: #666;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .visual-feedback {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 3em;
+            /* Animación removida */
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            #translatedText {
+                font-size: 2em;
+            }
+
+            .control-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-primary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎤 Traductor de Voz Universal</h1>
+            <p>Habla en cualquier idioma y traduce en tiempo real</p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <div class="display-area" id="displayArea">
+            <div id="translatedText">🎤 Selecciona los idiomas y presiona INICIAR...</div>
+            <div id="visualFeedback" class="visual-feedback" style="display: none;">🎙️</div>
+        </div>
+
+        <div class="controls">
+            <div class="control-row">
+                <div class="control-group">
+                    <label>🗣️ Idioma Fuente:</label>
+                    <select id="sourceLang">
+                        <option value="es-ES">🇪🇸 Español</option>
+                        <option value="en-US">🇺🇸 Inglés</option>
+                        <option value="ja-JP">🇯🇵 Japonés</option>
+                        <option value="fr-FR">🇫🇷 Francés</option>
+                        <option value="de-DE">🇩🇪 Alemán</option>
+                        <option value="it-IT">🇮🇹 Italiano</option>
+                        <option value="pt-BR">🇧🇷 Portugués</option>
+                        <option value="zh-CN">🇨🇳 Chino</option>
+                        <option value="ko-KR">🇰🇷 Coreano</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>🌐 Traducir a:</label>
+                    <select id="targetLang">
+                        <option value="en">🇺🇸 Inglés</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="ja">🇯🇵 Japonés</option>
+                        <option value="fr">🇫🇷 Francés</option>
+                        <option value="de">🇩🇪 Alemán</option>
+                        <option value="it">🇮🇹 Italiano</option>
+                        <option value="pt">🇧🇷 Portugués</option>
+                        <option value="zh-CN">🇨🇳 Chino</option>
+                        <option value="ko">🇰🇷 Coreano</option>
+                    </select>
+                </div>
+
+                <button id="startBtn" class="btn btn-primary">▶️ INICIAR</button>
+                <button id="stopBtn" class="btn btn-stop" style="display: none;">⏹️ DETENER</button>
+            </div>
+
+            <div class="control-row">
+                <div class="control-group">
+                    <label>📝 Fuente:</label>
+                    <select id="fontFamily">
+                        <option>Arial</option>
+                        <option>Verdana</option>
+                        <option>Georgia</option>
+                        <option>Times New Roman</option>
+                        <option>Courier New</option>
+                        <option>Comic Sans MS</option>
+                        <option>Impact</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>📏 Tamaño:</label>
+                    <select id="fontSize">
+                        <option value="2">Pequeño</option>
+                        <option value="3" selected>Mediano</option>
+                        <option value="4">Grande</option>
+                        <option value="5">Muy Grande</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label>🖊️ Borde:</label>
+                    <select id="borderStyle">
+                        <option value="none">Sin Borde</option>
+                        <option value="thin">Fino</option>
+                        <option value="medium">Medio</option>
+                        <option value="thick">Grueso</option>
+                        <option value="glow">Resplandor</option>
+                    </select>
+                </div>
+
+                <div class="color-picker-group">
+                    <label>🎨 Texto:</label>
+                    <input type="color" id="textColor" value="#ffffff">
+                </div>
+
+                <div class="color-picker-group">
+                    <label>🖌️ Fondo:</label>
+                    <input type="color" id="bgColor" value="#000000">
+                </div>
+
+                <div class="color-picker-group">
+                    <label>✏️ Borde:</label>
+                    <input type="color" id="borderColor" value="#000000">
+                </div>
+
+                <button id="infoBtn" class="btn btn-info">ℹ️ AYUDA</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>💡 <strong>Nota:</strong> Requiere navegador Chrome/Edge y conexión a internet</p>
+            <p>🚀 <strong>Optimizado:</strong> Traducción rápida (300ms) con sistema de cache</p>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let recognition = null;
+        let isRecognizing = false;
+        let wordBuffer = [];
+        let autoTranslateTimeout = null;
+        let translationCache = new Map(); // Cache para traducciones
+        let pendingTranslations = new Map(); // Control de traducciones en proceso
+        let lastTranslationTime = 0;
+        const TRANSLATION_DELAY = 300; // Reducido de 1000ms a 300ms
+
+        // Elementos del DOM
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const translatedText = document.getElementById('translatedText');
+        const displayArea = document.getElementById('displayArea');
+        const visualFeedback = document.getElementById('visualFeedback');
+        const alert = document.getElementById('alert');
+        const sourceLang = document.getElementById('sourceLang');
+        const targetLang = document.getElementById('targetLang');
+        const fontFamily = document.getElementById('fontFamily');
+        const fontSize = document.getElementById('fontSize');
+        const textColor = document.getElementById('textColor');
+        const bgColor = document.getElementById('bgColor');
+        const borderStyle = document.getElementById('borderStyle');
+        const borderColor = document.getElementById('borderColor');
+        const infoBtn = document.getElementById('infoBtn');
+
+        // Verificar compatibilidad
+        if (!('webkitSpeechRecognition' in window)) {
+            showAlert('Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.', 'error');
+            startBtn.disabled = true;
+        }
+
+        // Función para mostrar alertas
+        function showAlert(message, type = 'info') {
+            alert.className = `alert ${type} show`;
+            alert.textContent = message;
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 5000);
+        }
+
+        // Traducir texto usando API gratuita de MyMemory (con cache)
+        async function translateText(text, targetLangCode) {
+            if (!text || text.trim().length === 0) return text;
+
+            try {
+                // Extraer código base del idioma fuente
+                const sourceLangCode = sourceLang.value.split('-')[0];
+                
+                // Si es el mismo idioma, no traducir
+                if (sourceLangCode === targetLangCode) {
+                    return text;
+                }
+
+                // Crear clave de cache
+                const cacheKey = `${sourceLangCode}-${targetLangCode}-${text}`;
+                
+                // Verificar cache
+                if (translationCache.has(cacheKey)) {
+                    console.log('📦 Traducción desde cache');
+                    return translationCache.get(cacheKey);
+                }
+
+                // Evitar traducciones duplicadas simultáneas
+                if (pendingTranslations.has(cacheKey)) {
+                    console.log('⏳ Traducción ya en proceso, esperando...');
+                    return await pendingTranslations.get(cacheKey);
+                }
+
+                // Control de rate limiting (máximo 1 traducción cada 200ms)
+                const now = Date.now();
+                const timeSinceLastTranslation = now - lastTranslationTime;
+                if (timeSinceLastTranslation < 200) {
+                    await new Promise(resolve => setTimeout(resolve, 200 - timeSinceLastTranslation));
+                }
+
+                // Crear promesa de traducción
+                const translationPromise = (async () => {
+                    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLangCode}|${targetLangCode}`;
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    lastTranslationTime = Date.now();
+
+                    if (data.responseStatus === 200 && data.responseData.translatedText) {
+                        const translated = data.responseData.translatedText;
+                        // Guardar en cache
+                        translationCache.set(cacheKey, translated);
+                        // Limitar tamaño del cache (máximo 100 entradas)
+                        if (translationCache.size > 100) {
+                            const firstKey = translationCache.keys().next().value;
+                            translationCache.delete(firstKey);
+                        }
+                        return translated;
+                    }
+                    
+                    return text;
+                })();
+
+                // Guardar promesa pendiente
+                pendingTranslations.set(cacheKey, translationPromise);
+                
+                const result = await translationPromise;
+                
+                // Limpiar promesa pendiente
+                pendingTranslations.delete(cacheKey);
+                
+                return result;
+            } catch (error) {
+                console.error('Error al traducir:', error);
+                return text;
+            }
+        }
+
+        // Actualizar display con gestión de buffer
+        function updateDisplay() {
+            const currentTime = Date.now();
+            
+            // Limpiar palabras expiradas (7 segundos)
+            wordBuffer = wordBuffer.filter(item => currentTime - item.timestamp <= 7000);
+
+            // Mostrar texto
+            if (wordBuffer.length > 0) {
+                const displayText = wordBuffer.map(item => item.text).join(' ');
+                translatedText.textContent = displayText;
+                translatedText.classList.add('speaking');
+            } else {
+                translatedText.textContent = '';
+                translatedText.classList.remove('speaking');
+            }
+
+            // Limitar palabras totales
+            if (wordBuffer.length > 40) {
+                wordBuffer = wordBuffer.slice(-40);
+            }
+        }
+
+        // Detectar palabras expresivas
+        function hasStretchedWords(text) {
+            const words = text.split(' ');
+            for (const word of words) {
+                for (let i = 0; i < word.length - 2; i++) {
+                    if (word[i] === word[i + 1] && word[i + 1] === word[i + 2]) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // Iniciar reconocimiento
+        function startRecognition() {
+            // Si ya existe un reconocedor, reutilizarlo
+            if (!recognition) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.maxAlternatives = 1;
+                
+                setupRecognitionHandlers();
+            }
+            
+            // Actualizar idioma
+            recognition.lang = sourceLang.value;
+            isRecognizing = true;
+            
+            try {
+                recognition.start();
+            } catch (e) {
+                console.log('⚠️ Reconocimiento ya iniciado');
+            }
+        }
+
+        // Configurar manejadores de eventos (separado para reutilización)
+        function setupRecognitionHandlers() {
+            recognition.onstart = () => {
+                visualFeedback.style.display = 'block';
+                startBtn.style.display = 'none';
+                stopBtn.style.display = 'inline-flex';
+                console.log('🎤 Reconocimiento iniciado');
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+
+                // Procesar resultado final
+                if (finalTranscript) {
+                    console.log('✅ Texto reconocido:', finalTranscript);
+                    
+                    // Detectar palabras expresivas
+                    if (hasStretchedWords(finalTranscript)) {
+                        console.log('🎉 EXPRESIVO:', finalTranscript);
+                    }
+
+                    // Añadir al buffer (texto original)
+                    const currentTime = Date.now();
+                    const words = finalTranscript.split(' ');
+                    words.forEach(word => {
+                        if (word.trim().length > 0) {
+                            wordBuffer.push({
+                                text: word,
+                                timestamp: currentTime,
+                                isOriginal: true
+                            });
+                        }
+                    });
+
+                    updateDisplay();
+
+                    // Verificar si necesita traducción
+                    const sourceLangCode = sourceLang.value.split('-')[0];
+                    const targetLangCode = targetLang.value;
+                    
+                    console.log(`📋 Idiomas: ${sourceLangCode} → ${targetLangCode}`);
+
+                    if (sourceLangCode !== targetLangCode) {
+                        // Programar traducción
+                        clearTimeout(autoTranslateTimeout);
+                        autoTranslateTimeout = setTimeout(async () => {
+                            console.log('🌐 Iniciando traducción...');
+                            
+                            const translated = await translateText(finalTranscript, targetLangCode);
+                            
+                            console.log('📝 Original:', finalTranscript);
+                            console.log('✨ Traducido:', translated);
+                            
+                            if (translated && translated !== finalTranscript) {
+                                // Reemplazar palabras originales con traducidas
+                                const newWords = translated.split(' ');
+                                const translationTime = Date.now();
+                                
+                                // Filtrar palabras originales de este timestamp
+                                wordBuffer = wordBuffer.filter(item => 
+                                    item.timestamp !== currentTime || !item.isOriginal
+                                );
+                                
+                                // Añadir palabras traducidas
+                                newWords.forEach(word => {
+                                    if (word.trim().length > 0) {
+                                        wordBuffer.push({
+                                            text: word,
+                                            timestamp: currentTime,
+                                            isOriginal: false
+                                        });
+                                    }
+                                });
+                                
+                                updateDisplay();
+                            }
+                        }, TRANSLATION_DELAY);
+                    } else {
+                        console.log('ℹ️ Mismo idioma, sin traducción');
+                    }
+                }
+
+                // Mostrar resultados parciales
+                if (interimTranscript) {
+                    console.log('🎤 Parcial:', interimTranscript);
+                    
+                    const currentTime = Date.now();
+                    const displayText = wordBuffer
+                        .filter(item => currentTime - item.timestamp <= 7000)
+                        .map(item => item.text)
+                        .join(' ') + ' ' + interimTranscript;
+                    
+                    translatedText.textContent = displayText;
+                    translatedText.classList.add('speaking');
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('❌ Error:', event.error);
+                if (event.error === 'no-speech') {
+                    console.log('⚠️ No se detectó voz');
+                } else if (event.error === 'network') {
+                    showAlert('❌ Error de red. Verifica tu conexión a internet.', 'error');
+                } else if (event.error === 'aborted') {
+                    console.log('ℹ️ Reconocimiento abortado');
+                } else {
+                    console.error('❌ Error:', event.error);
+                }
+            };
+
+            recognition.onend = () => {
+                console.log('🔴 Reconocimiento terminado');
+                if (isRecognizing) {
+                    // Reiniciar automáticamente
+                    setTimeout(() => {
+                        if (isRecognizing) {
+                            try {
+                                recognition.start();
+                            } catch (e) {
+                                console.log('⚠️ Error al reiniciar:', e.message);
+                            }
+                        }
+                    }, 100);
+                } else {
+                    visualFeedback.style.display = 'none';
+                }
+            };
+        }
+
+        // Detener reconocimiento
+        function stopRecognition() {
+            if (recognition) {
+                isRecognizing = false;
+                recognition.stop();
+                visualFeedback.style.display = 'none';
+                startBtn.style.display = 'inline-flex';
+                stopBtn.style.display = 'none';
+                console.log('⏹️ Reconocimiento detenido');
+            }
+        }
+
+        // Cambiar idioma fuente en tiempo real
+        sourceLang.addEventListener('change', () => {
+            if (isRecognizing && recognition) {
+                console.log('🔄 Cambiando idioma fuente a:', sourceLang.value);
+                wordBuffer = []; // Limpiar buffer
+                translationCache.clear(); // Limpiar cache de traducciones
+                updateDisplay();
+                recognition.lang = sourceLang.value;
+            }
+        });
+
+        // Limpiar cache al cambiar idioma destino
+        targetLang.addEventListener('change', () => {
+            if (isRecognizing) {
+                translationCache.clear();
+                console.log('🧹 Cache de traducciones limpiado');
+            }
+        });
+
+        // Personalización en tiempo real
+        fontFamily.addEventListener('change', () => {
+            translatedText.style.fontFamily = fontFamily.value;
+        });
+
+        fontSize.addEventListener('change', () => {
+            translatedText.style.fontSize = fontSize.value + 'em';
+        });
+
+        textColor.addEventListener('input', () => {
+            translatedText.style.color = textColor.value;
+        });
+
+        bgColor.addEventListener('input', () => {
+            displayArea.style.background = bgColor.value;
+        });
+
+        borderStyle.addEventListener('change', () => {
+            // Remover todas las clases de borde
+            translatedText.classList.remove('border-thin', 'border-medium', 'border-thick', 'border-glow');
+            
+            // Añadir la clase seleccionada si no es "none"
+            const style = borderStyle.value;
+            if (style !== 'none') {
+                translatedText.classList.add('border-' + style);
+            }
+        });
+
+        borderColor.addEventListener('input', () => {
+            displayArea.style.setProperty('--border-color', borderColor.value);
+        });
+
+        // Botones
+        startBtn.addEventListener('click', startRecognition);
+        stopBtn.addEventListener('click', stopRecognition);
+
+        infoBtn.addEventListener('click', () => {
+            const infoText = `
+🎯 TRADUCTOR UNIVERSAL WEB
+
+✨ CARACTERÍSTICAS:
+• Reconocimiento de voz en tiempo real
+• Traducción automática entre 9 idiomas
+• Cambio de idioma sin pausar
+• Detección de palabras expresivas
+• Personalización completa
+
+🎤 CÓMO USAR:
+1. Selecciona idioma fuente y destino
+2. Presiona INICIAR (solo solicita permiso 1 vez)
+3. Habla normalmente
+4. Traducción en 300ms (3x más rápido)
+5. Las palabras expiran en 7 segundos
+
+🔧 REQUISITOS:
+• Navegador Chrome o Edge
+• Micrófono funcional
+• Conexión a internet
+
+💡 TIPS:
+• Habla con claridad
+• Las frases completas traducen mejor
+• Cambio de idioma en tiempo real
+• Sistema de cache: traducciones instantáneas repetidas
+• Solo solicita micrófono al inicio
+
+⚙️ PERSONALIZACIÓN:
+• Fuente, tamaño, colores
+• Borde/contorno para contraste
+• 4 estilos de borde + resplandor
+• Ajustes en tiempo real
+            `.trim();
+            
+            alert(infoText);
+        });
+
+        // Limpiar buffer periódicamente (optimizado)
+        setInterval(() => {
+            if (isRecognizing) {
+                updateDisplay();
+            }
+        }, 1000); // Reducido a 1 segundo para mejor rendimiento
+
+        console.log('✅ Sistema listo');
+        console.log('🎤 Idiomas disponibles:', sourceLang.options.length);
+    </script>
+</body>
+</html>

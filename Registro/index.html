@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaVerse - Registro de Eventos</title>
+    <link rel="stylesheet" href="styles-registro.css">
+</head>
+<body>
+    <div class="space-background"></div>
+    <div class="stars-container" id="starsContainer"></div>
+    
+    <header class="header">
+        <img src="Logo.png" alt="NovaVerse Logo">
+    </header>
+    
+    <div class="content">
+        <div class="back-button">
+            <a href="index.html">← Volver al inicio</a>
+        </div>
+        
+        <h1>REGISTRO DE EVENTOS</h1>
+        
+        <div class="form-container">
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="nombre">Nombre Completo *</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Correo Electrónico *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="discord">Usuario de Discord *</label>
+                    <input type="text" id="discord" name="discord" placeholder="usuario#1234" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="evento">Tipo de Evento *</label>
+                    <select id="evento" name="evento" required>
+                        <option value="">Selecciona un tipo de evento</option>
+                        <option value="streaming">Evento de Streaming</option>
+                        <option value="torneo">Torneo</option>
+                        <option value="construccion">Construcción Colaborativa</option>
+                        <option value="minijuegos">Mini-juegos</option>
+                        <option value="roleplay">Roleplay</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="nombreEvento">Nombre del Evento *</label>
+                    <input type="text" id="nombreEvento" name="nombreEvento" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="duracion">Duración del Evento *</label>
+                    <select id="duracion" name="duracion" required onchange="toggleFechaFin()">
+                        <option value="">Selecciona la duración</option>
+                        <option value="1dia">1 día</option>
+                        <option value="varios">Varios días</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fechaInicio">Fecha de Inicio *</label>
+                    <input type="date" id="fechaInicio" name="fechaInicio" required>
+                </div>
+                
+                <div class="form-group" id="fechaFinGroup" style="display: none;">
+                    <label for="fechaFin">Fecha de Fin *</label>
+                    <input type="date" id="fechaFin" name="fechaFin">
+                </div>
+                
+                <div class="form-group">
+                    <label for="hora">Hora Propuesta *</label>
+                    <input type="time" id="hora" name="hora" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="participantes">Número Estimado de Participantes *</label>
+                    <input type="number" id="participantes" name="participantes" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="plataforma">Plataforma de Transmisión</label>
+                    <select id="plataforma" name="plataforma">
+                        <option value="">No aplica</option>
+                        <option value="twitch">Twitch</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="multiple">Múltiples plataformas</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="canalUrl">URL del Canal (si aplica)</label>
+                    <input type="url" id="canalUrl" name="canalUrl" placeholder="https://...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="descripcion">Descripción del Evento *</label>
+                    <textarea id="descripcion" name="descripcion" rows="5" required placeholder="Describe tu evento, objetivos, mecánicas, etc."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="requisitos">Requisitos Especiales</label>
+                    <textarea id="requisitos" name="requisitos" rows="3" placeholder="Mods, plugins, configuraciones especiales, etc."></textarea>
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="terminos" name="terminos" required>
+                        Acepto los términos y condiciones *
+                    </label>
+                </div>
+                
+                <button type="submit" class="submit-button">
+                    <span class="button-text">ENVIAR REGISTRO</span>
+                    <span class="button-loading">ENVIANDO...</span>
+                </button>
+                
+                <div id="messageContainer" class="message-container"></div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="social-footer">
+        <div class="footer-text">
+            ¿Dudas? Únete a nuestro 
+            <a href="https://discord.gg/KUgrRfZQjt" target="_blank">Discord</a>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFechaFin() {
+            const duracion = document.getElementById('duracion').value;
+            const fechaFinGroup = document.getElementById('fechaFinGroup');
+            const fechaFin = document.getElementById('fechaFin');
+            
+            if (duracion === 'varios') {
+                fechaFinGroup.style.display = 'block';
+                fechaFin.required = true;
+            } else {
+                fechaFinGroup.style.display = 'none';
+                fechaFin.required = false;
+                fechaFin.value = '';
+            }
+        }
+    </script>
+    <script src="script-registro.js"></script>
+</body>
+</html>

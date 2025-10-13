@@ -1,0 +1,456 @@
+/* ========================================
+   ESTILOS GENERALES Y FONDO
+   ======================================== */
+
+   body, html {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    font-family: 'Arial', sans-serif;
+    cursor: default;
+}
+
+.space-background {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #000033 0%, #000 50%, #330033 100%);
+    z-index: -2;
+}
+
+.stars-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background-color: white;
+    border-radius: 50%;
+}
+
+/* ========================================
+   HEADER Y LOGO
+   ======================================== */
+
+.header {
+    position: static;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20vh;
+    min-height: 80px;
+    max-height: 200px;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: visible;
+    background: transparent;
+    padding-top: 20px;
+}
+
+.header img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    min-width: 100%;
+    min-height: 100%;
+}
+
+/* ========================================
+   PLANETAS Y DECORACIONES
+   ======================================== */
+
+.planet {
+    position: fixed;
+    width: 15vw;
+    height: 15vw;
+    max-width: 150px;
+    max-height: 150px;
+    min-width: 50px;
+    min-height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #3366ff, #6633ff);
+    box-shadow: 0 0 30px #6633ff, inset -20px -20px 40px rgba(0, 0, 0, 0.5);
+    left: 10%;
+    top: 30%;
+    opacity: 0.8;
+    animation: float 15s infinite ease-in-out;
+}
+
+.saturn-system {
+    position: fixed;
+    right: 15%;
+    top: 60%;
+    animation: float 20s infinite ease-in-out reverse;
+    z-index: 1;
+}
+
+.saturn {
+    position: relative;
+    width: 10vw;
+    height: 10vw;
+    max-width: 100px;
+    max-height: 100px;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #ffcc33, #ff9933);
+    box-shadow: 0 0 20px #ff9933;
+    opacity: 0.9;
+    z-index: 2;
+    margin: 0 auto;
+}
+
+.saturn-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-20deg);
+    width: 160%;
+    height: 30%;
+    border-radius: 50%;
+    border: min(0.5vw, 5px) solid rgba(255, 204, 51, 0.4);
+    z-index: 1;
+}
+
+/* ========================================
+   ANIMACIONES
+   ======================================== */
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-20px) rotate(5deg);
+    }
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+    to {
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.5), 0 0 40px rgba(102, 204, 255, 0.7);
+    }
+}
+
+/* ========================================
+   CONTENIDO PRINCIPAL
+   ======================================== */
+
+.content {
+    position: relative;
+    padding-top: 20px;
+    padding-bottom: 100px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 4;
+}
+
+/* ========================================
+   BOTÓN DE REGRESO
+   ======================================== */
+
+.back-button {
+    margin-bottom: 20px;
+}
+
+.back-button a {
+    color: #66ccff;
+    text-decoration: none;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(102, 204, 255, 0.1);
+    border-radius: 5px;
+    border: 1px solid rgba(102, 204, 255, 0.3);
+}
+
+.back-button a:hover {
+    background: rgba(102, 204, 255, 0.2);
+    transform: translateX(-5px);
+    box-shadow: 0 0 15px rgba(102, 204, 255, 0.5);
+}
+
+/* ========================================
+   TÍTULO PRINCIPAL
+   ======================================== */
+
+.content h1 {
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: clamp(2px, 1vw, 5px);
+    text-shadow: 0 0 10px rgba(255, 248, 231, 0.5), 0 0 20px rgba(255, 248, 231, 0.3);
+    animation: glow 2s infinite alternate;
+    color: white;
+    text-align: center;
+}
+
+/* ========================================
+   CONTENEDOR DEL FORMULARIO
+   ======================================== */
+
+.form-container {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 0 30px rgba(102, 51, 255, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+/* ========================================
+   GRUPOS DE FORMULARIO
+   ======================================== */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #9a7bcc;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 14px;
+    text-shadow: 0 0 5px rgba(154, 123, 204, 0.5);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid rgba(102, 51, 255, 0.3);
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 14px;
+    font-family: 'Arial', sans-serif;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: rgba(102, 51, 255, 0.8);
+    box-shadow: 0 0 15px rgba(102, 51, 255, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: rgba(154, 123, 204, 0.6);
+}
+
+/* ========================================
+   CHECKBOX
+   ======================================== */
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 0;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 10px;
+    cursor: pointer;
+    transform: scale(1.2);
+}
+
+/* ========================================
+   BOTÓN DE ENVÍO
+   ======================================== */
+
+.submit-button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(45deg, #6633ff, #9966ff);
+    color: white;
+    border: 2px solid rgba(102, 51, 255, 0.5);
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 0 15px rgba(102, 51, 255, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.submit-button:hover {
+    background: linear-gradient(45deg, #7744ff, #aa77ff);
+    box-shadow: 0 0 25px rgba(102, 51, 255, 0.8);
+    transform: translateY(-2px);
+}
+
+.submit-button:active {
+    transform: translateY(0);
+}
+
+.submit-button:disabled {
+    background: linear-gradient(45deg, #555, #777);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.submit-button .button-loading {
+    display: none;
+}
+
+.submit-button.loading .button-text {
+    display: none;
+}
+
+.submit-button.loading .button-loading {
+    display: inline;
+}
+
+/* ========================================
+   MENSAJES DE ESTADO
+   ======================================== */
+
+.message-container {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    display: none;
+}
+
+.message-container.show {
+    display: block;
+}
+
+.message-container.success {
+    background-color: rgba(76, 175, 80, 0.2);
+    border: 2px solid rgba(76, 175, 80, 0.5);
+    color: #4caf50;
+}
+
+.message-container.error {
+    background-color: rgba(244, 67, 54, 0.2);
+    border: 2px solid rgba(244, 67, 54, 0.5);
+    color: #f44336;
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+.social-footer {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgb(223, 46, 193);
+    font-size: 14px;
+    z-index: 5;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: 20px;
+}
+
+.footer-text {
+    text-align: center;
+}
+
+.footer-text a {
+    color: #66ccff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.footer-text a:hover {
+    color: #99ddff;
+    text-shadow: 0 0 10px rgba(102, 204, 255, 0.8);
+}
+
+/* ========================================
+   RESPONSIVE - TABLETS
+   ======================================== */
+
+@media (max-width: 768px) {
+    .header {
+        height: 15vh;
+        min-height: 60px;
+    }
+    
+    .form-container {
+        padding: 20px;
+    }
+    
+    .content h1 {
+        font-size: 1.5rem;
+    }
+    
+    .planet, .saturn-system {
+        display: none;
+    }
+}
+
+/* ========================================
+   RESPONSIVE - MÓVILES
+   ======================================== */
+
+@media (max-width: 480px) {
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px; /* Previene zoom automático en iOS */
+    }
+    
+    .form-container {
+        padding: 15px;
+        width: 95%;
+    }
+    
+    .back-button a {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+    
+    .submit-button {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
